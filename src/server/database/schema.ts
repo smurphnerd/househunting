@@ -98,10 +98,23 @@ export const properties = pgTable("properties", {
   ...timestampFields,
 });
 
+export const inspectionTimes = pgTable("inspection_times", {
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  propertyId: text()
+    .notNull()
+    .references(() => properties.id, { onDelete: "cascade" }),
+  dateTime: timestamp().notNull(),
+  attended: boolean().notNull().default(false),
+  ...timestampFields,
+});
+
 export const schema = {
   users,
   verifications,
   rateLimits,
   sessions,
   properties,
+  inspectionTimes,
 };
