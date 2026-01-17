@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useORPC } from "@/lib/orpc.client";
@@ -29,17 +29,17 @@ function AddPropertyDialog() {
   const [open, setOpen] = useState(false);
   const [address, setAddress] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
-  const queryClient = useQueryClient();
+  const router = useRouter();
   const orpc = useORPC();
 
   const createMutation = useMutation({
     mutationFn: (input: { address: string; websiteUrl?: string }) =>
       orpc.property.create.call(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["property", "list"] });
+    onSuccess: (newProperty) => {
       setOpen(false);
       setAddress("");
       setWebsiteUrl("");
+      router.push(`/properties/${newProperty.id}`);
     },
   });
 
@@ -89,18 +89,21 @@ function AddPropertyDialog() {
 function PropertiesTable() {
   const router = useRouter();
   const orpc = useORPC();
-  const queryClient = useQueryClient();
 
-  const { data: properties } = useSuspenseQuery(
+  const { data: properties, isLoading } = useQuery(
     orpc.property.list.queryOptions({ input: undefined })
   );
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => orpc.property.delete.call({ id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["property", "list"] });
+      router.refresh();
     },
   });
+
+  if (isLoading || !properties) {
+    return <PropertiesLoading />;
+  }
 
   function formatPrice(price: number | null) {
     if (price === null) return "-";
@@ -192,9 +195,7 @@ export default function PropertiesPage() {
         <AddPropertyDialog />
       </div>
       <ErrorBoundary>
-        <Suspense fallback={<PropertiesLoading />}>
-          <PropertiesTable />
-        </Suspense>
+        <PropertiesTable />
       </ErrorBoundary>
     </div>
   );

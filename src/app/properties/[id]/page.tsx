@@ -1,8 +1,8 @@
 // src/app/properties/[id]/page.tsx
 "use client";
 
-import { Suspense, use } from "react";
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { use } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,9 +41,13 @@ function PropertyForm({ id }: { id: string }) {
   const orpc = useORPC();
   const queryClient = useQueryClient();
 
-  const { data: property } = useSuspenseQuery(
+  const { data: property, isLoading } = useQuery(
     orpc.property.getById.queryOptions({ input: { id } })
   );
+
+  if (isLoading) {
+    return <PropertyLoading />;
+  }
 
   const form = useForm<UpdatePropertyInput>({
     resolver: zodResolver(UpdatePropertyInput),
@@ -834,9 +838,7 @@ function PropertyForm({ id }: { id: string }) {
       </form>
     </Form>
 
-    <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-      <InspectionTimes propertyId={id} />
-    </Suspense>
+    <InspectionTimes propertyId={id} />
   </>
   );
 }
@@ -868,9 +870,7 @@ export default function PropertyDetailPage({
         Back
       </Button>
       <ErrorBoundary>
-        <Suspense fallback={<PropertyLoading />}>
-          <PropertyForm id={id} />
-        </Suspense>
+        <PropertyForm id={id} />
       </ErrorBoundary>
     </div>
   );

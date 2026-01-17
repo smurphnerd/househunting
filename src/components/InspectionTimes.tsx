@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
   const queryClient = useQueryClient();
   const [newDateTime, setNewDateTime] = useState("");
 
-  const { data: inspectionTimes } = useSuspenseQuery(
+  const { data: inspectionTimes, isLoading } = useQuery(
     orpc.inspectionTime.listByProperty.queryOptions({ input: { propertyId } })
   );
 
@@ -69,7 +69,9 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
           </Button>
         </form>
 
-        {inspectionTimes.length === 0 ? (
+        {isLoading ? (
+          <p className="text-muted-foreground text-sm">Loading...</p>
+        ) : !inspectionTimes || inspectionTimes.length === 0 ? (
           <p className="text-muted-foreground text-sm">No inspection times scheduled.</p>
         ) : (
           <ul className="space-y-2">
