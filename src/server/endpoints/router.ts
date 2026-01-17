@@ -1,5 +1,4 @@
-import { authMiddleware, commonProcedure } from "@/server/endpoints/procedure";
-import { exampleRouter } from "@/server/endpoints/exampleRouter";
+import { commonProcedure } from "@/server/endpoints/procedure";
 import { propertyRouter } from "@/server/endpoints/propertyRouter";
 import { inspectionTimeRouter } from "@/server/endpoints/inspectionTimeRouter";
 
@@ -12,14 +11,6 @@ import { inspectionTimeRouter } from "@/server/endpoints/inspectionTimeRouter";
 export const appRouter = {
   // Health check endpoint
   ping: commonProcedure.handler(() => "pong"),
-
-  // Example protected endpoint
-  getProfile: commonProcedure
-    .use(authMiddleware)
-    .handler(({ context }) => ({ email: context.user.email })),
-
-  // Example sub-router
-  example: exampleRouter,
 
   // Property management router
   property: propertyRouter,
