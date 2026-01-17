@@ -28,7 +28,7 @@ export type CreatePropertyInput = z.infer<typeof CreatePropertyInput>;
 
 export const UpdatePropertyInput = z.object({
   id: z.string().uuid(),
-  websiteUrl: z.string().url().optional().nullable(),
+  websiteUrl: z.union([z.string().url(), z.literal("")]).optional().nullable().transform(v => v === "" ? null : v),
   address: z.string().min(1).optional(),
   status: PropertyStatus.optional(),
   propertyType: PropertyType.optional().nullable(),

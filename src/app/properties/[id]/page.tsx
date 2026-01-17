@@ -87,7 +87,7 @@ function PropertyForm({ id }: { id: string }) {
 
   const updateMutation = useMutation({
     mutationFn: (input: UpdatePropertyInput) =>
-      orpc.property.update.call({ input }),
+      orpc.property.update.call(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["property"] });
       toast.success("Property updated");
@@ -98,7 +98,7 @@ function PropertyForm({ id }: { id: string }) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => orpc.property.delete.call({ input: { id } }),
+    mutationFn: () => orpc.property.delete.call({ id }),
     onSuccess: () => {
       router.push("/properties");
     },
@@ -113,6 +113,7 @@ function PropertyForm({ id }: { id: string }) {
   }
 
   return (
+    <>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Header */}
@@ -830,11 +831,13 @@ function PropertyForm({ id }: { id: string }) {
           </Card>
         </Collapsible>
 
-        <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-          <InspectionTimes propertyId={id} />
-        </Suspense>
       </form>
     </Form>
+
+    <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+      <InspectionTimes propertyId={id} />
+    </Suspense>
+  </>
   );
 }
 

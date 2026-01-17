@@ -20,7 +20,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
 
   const createMutation = useMutation({
     mutationFn: (dateTime: Date) =>
-      orpc.inspectionTime.create.call({ input: { propertyId, dateTime } }),
+      orpc.inspectionTime.create.call({ propertyId, dateTime }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inspectionTime"] });
       setNewDateTime("");
@@ -30,7 +30,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, attended }: { id: string; attended: boolean }) =>
-      orpc.inspectionTime.update.call({ input: { id, attended } }),
+      orpc.inspectionTime.update.call({ id, attended }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inspectionTime"] });
     },
@@ -38,7 +38,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      orpc.inspectionTime.delete.call({ input: { id } }),
+      orpc.inspectionTime.delete.call({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inspectionTime"] });
       toast.success("Inspection time removed");

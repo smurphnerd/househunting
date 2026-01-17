@@ -34,7 +34,7 @@ function AddPropertyDialog() {
 
   const createMutation = useMutation({
     mutationFn: (input: { address: string; websiteUrl?: string }) =>
-      orpc.property.create.call({ input }),
+      orpc.property.create.call(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["property", "list"] });
       setOpen(false);
@@ -96,7 +96,7 @@ function PropertiesTable() {
   );
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => orpc.property.delete.call({ input: { id } }),
+    mutationFn: (id: string) => orpc.property.delete.call({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["property", "list"] });
     },
