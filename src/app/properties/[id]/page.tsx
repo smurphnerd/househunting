@@ -1,7 +1,7 @@
 // src/app/properties/[id]/page.tsx
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -45,49 +45,87 @@ function PropertyForm({ id }: { id: string }) {
     orpc.property.getById.queryOptions({ input: { id } })
   );
 
-  if (isLoading) {
-    return <PropertyLoading />;
-  }
-
   const form = useForm<UpdatePropertyInput>({
     resolver: zodResolver(UpdatePropertyInput),
     defaultValues: {
       id,
-      websiteUrl: property?.websiteUrl ?? "",
-      address: property?.address ?? "",
-      status: property?.status ?? "saved",
-      propertyType: property?.propertyType ?? null,
-      price: property?.price ?? null,
-      bedrooms: property?.bedrooms ?? 1,
-      bathrooms: property?.bathrooms ?? 1,
-      squareMetres: property?.squareMetres ?? null,
-      ageYears: property?.ageYears ?? null,
-      previousPrice: property?.previousPrice ?? null,
-      carParkIncluded: property?.carParkIncluded ?? null,
-      carParkCost: property?.carParkCost ?? null,
-      bodyCorpFees: property?.bodyCorpFees ?? null,
-      councilRates: property?.councilRates ?? null,
-      estimatedRent: property?.estimatedRent ?? null,
-      petsAllowed: property?.petsAllowed ?? null,
-      storageIncluded: property?.storageIncluded ?? null,
-      aspect: property?.aspect ?? null,
-      agentName: property?.agentName ?? "",
-      agentContact: property?.agentContact ?? "",
-      dateListed: property?.dateListed ?? null,
-      notes: property?.notes ?? "",
-      desksFit: property?.desksFit ?? null,
-      hasLaundrySpace: property?.hasLaundrySpace ?? null,
-      floorLevel: property?.floorLevel ?? null,
-      goodLighting: property?.goodLighting ?? null,
-      hasDishwasher: property?.hasDishwasher ?? null,
-      stoveType: property?.stoveType ?? null,
-      isQuiet: property?.isQuiet ?? null,
-      hasAircon: property?.hasAircon ?? null,
-      overallImpression: property?.overallImpression ?? null,
-      visibleIssues: property?.visibleIssues ?? "",
-      postInspectionNotes: property?.postInspectionNotes ?? "",
+      websiteUrl: "",
+      address: "",
+      status: "saved",
+      propertyType: null,
+      price: null,
+      bedrooms: 1,
+      bathrooms: 1,
+      squareMetres: null,
+      ageYears: null,
+      previousPrice: null,
+      carParkIncluded: null,
+      carParkCost: null,
+      bodyCorpFees: null,
+      councilRates: null,
+      estimatedRent: null,
+      petsAllowed: null,
+      storageIncluded: null,
+      aspect: null,
+      agentName: "",
+      agentContact: "",
+      dateListed: null,
+      notes: "",
+      desksFit: null,
+      hasLaundrySpace: null,
+      floorLevel: null,
+      goodLighting: null,
+      hasDishwasher: null,
+      stoveType: null,
+      isQuiet: null,
+      hasAircon: null,
+      overallImpression: null,
+      visibleIssues: "",
+      postInspectionNotes: "",
     },
   });
+
+  // Reset form when property data loads
+  useEffect(() => {
+    if (property) {
+      form.reset({
+        id,
+        websiteUrl: property.websiteUrl ?? "",
+        address: property.address ?? "",
+        status: property.status ?? "saved",
+        propertyType: property.propertyType ?? null,
+        price: property.price ?? null,
+        bedrooms: property.bedrooms ?? 1,
+        bathrooms: property.bathrooms ?? 1,
+        squareMetres: property.squareMetres ?? null,
+        ageYears: property.ageYears ?? null,
+        previousPrice: property.previousPrice ?? null,
+        carParkIncluded: property.carParkIncluded ?? null,
+        carParkCost: property.carParkCost ?? null,
+        bodyCorpFees: property.bodyCorpFees ?? null,
+        councilRates: property.councilRates ?? null,
+        estimatedRent: property.estimatedRent ?? null,
+        petsAllowed: property.petsAllowed ?? null,
+        storageIncluded: property.storageIncluded ?? null,
+        aspect: property.aspect ?? null,
+        agentName: property.agentName ?? "",
+        agentContact: property.agentContact ?? "",
+        dateListed: property.dateListed ?? null,
+        notes: property.notes ?? "",
+        desksFit: property.desksFit ?? null,
+        hasLaundrySpace: property.hasLaundrySpace ?? null,
+        floorLevel: property.floorLevel ?? null,
+        goodLighting: property.goodLighting ?? null,
+        hasDishwasher: property.hasDishwasher ?? null,
+        stoveType: property.stoveType ?? null,
+        isQuiet: property.isQuiet ?? null,
+        hasAircon: property.hasAircon ?? null,
+        overallImpression: property.overallImpression ?? null,
+        visibleIssues: property.visibleIssues ?? "",
+        postInspectionNotes: property.postInspectionNotes ?? "",
+      });
+    }
+  }, [property, form, id]);
 
   const updateMutation = useMutation({
     mutationFn: (input: UpdatePropertyInput) =>
@@ -107,6 +145,11 @@ function PropertyForm({ id }: { id: string }) {
       router.push("/properties");
     },
   });
+
+  // Loading and not found checks must come after all hooks
+  if (isLoading) {
+    return <PropertyLoading />;
+  }
 
   if (!property) {
     return <div>Property not found</div>;
