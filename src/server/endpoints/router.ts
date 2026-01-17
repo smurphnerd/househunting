@@ -1,6 +1,7 @@
 import { authMiddleware, commonProcedure } from "@/server/endpoints/procedure";
 import { exampleRouter } from "@/server/endpoints/exampleRouter";
 import { propertyRouter } from "@/server/endpoints/propertyRouter";
+import { inspectionTimeRouter } from "@/server/endpoints/inspectionTimeRouter";
 
 /**
  * Main application router
@@ -22,6 +23,9 @@ export const appRouter = {
 
   // Property management router
   property: propertyRouter,
+
+  // Inspection time management router
+  inspectionTime: inspectionTimeRouter,
 
   // Add your routers here:
   // posts: postsRouter,
