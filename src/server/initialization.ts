@@ -13,6 +13,7 @@ import pinoPretty from "pino-pretty";
 import { type Auth, getAuth } from "@/server/auth";
 import { type Drizzle, getDatabase } from "@/server/database/database";
 import { ExampleService } from "@/server/services/ExampleService";
+import { InspectionTimeService } from "@/server/services/InspectionTimeService";
 import { PropertyService } from "@/server/services/PropertyService";
 
 /**
@@ -27,6 +28,7 @@ export type Cradle = {
   auth: Auth;
   // Add your services here
   exampleService: ExampleService;
+  inspectionTimeService: InspectionTimeService;
   propertyService: PropertyService;
   // storage?: S3StorageAdapter;
   // email?: EmailAdapter;
@@ -84,6 +86,9 @@ if (process.env.NODE_ENV !== "test") {
 
     // Example service
     exampleService: asClass(ExampleService).singleton(),
+
+    // Inspection time service
+    inspectionTimeService: asClass(InspectionTimeService).singleton(),
 
     // Property service
     propertyService: asClass(PropertyService).singleton(),
