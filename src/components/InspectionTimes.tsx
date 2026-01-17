@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,9 @@ import { toast } from "sonner";
 
 export function InspectionTimes({ propertyId }: { propertyId: string }) {
   const orpc = useORPC();
-  const queryClient = useQueryClient();
   const [newDateTime, setNewDateTime] = useState("");
 
-  const { data: inspectionTimes, isLoading } = useQuery(
+  const { data: inspectionTimes, isLoading, refetch } = useQuery(
     orpc.inspectionTime.listByProperty.queryOptions({ input: { propertyId } })
   );
 
@@ -22,7 +21,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
     mutationFn: (dateTime: Date) =>
       orpc.inspectionTime.create.call({ propertyId, dateTime }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inspectionTime"] });
+      refetch();
       setNewDateTime("");
       toast.success("Inspection time added");
     },
@@ -32,7 +31,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
     mutationFn: ({ id, attended }: { id: string; attended: boolean }) =>
       orpc.inspectionTime.update.call({ id, attended }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inspectionTime"] });
+      refetch();
     },
   });
 
@@ -40,7 +39,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
     mutationFn: (id: string) =>
       orpc.inspectionTime.delete.call({ id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["inspectionTime"] });
+      refetch();
       toast.success("Inspection time removed");
     },
   });

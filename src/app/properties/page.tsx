@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useORPC } from "@/lib/orpc.client";
@@ -89,15 +89,16 @@ function AddPropertyDialog() {
 function PropertiesTable() {
   const router = useRouter();
   const orpc = useORPC();
+  const queryClient = useQueryClient();
 
-  const { data: properties, isLoading } = useQuery(
+  const { data: properties, isLoading, refetch } = useQuery(
     orpc.property.list.queryOptions({ input: undefined })
   );
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => orpc.property.delete.call({ id }),
     onSuccess: () => {
-      router.refresh();
+      refetch();
     },
   });
 
