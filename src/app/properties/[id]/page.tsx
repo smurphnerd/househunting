@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { InspectionTimes } from "@/components/InspectionTimes";
 import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -828,6 +829,10 @@ function PropertyForm({ id }: { id: string }) {
             </CollapsibleContent>
           </Card>
         </Collapsible>
+
+        <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+          <InspectionTimes propertyId={id} />
+        </Suspense>
       </form>
     </Form>
   );
