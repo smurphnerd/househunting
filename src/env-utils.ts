@@ -39,6 +39,10 @@ export const envSchema = z.object({
   GOOGLE_MAPS_API_KEY: z.string().optional(),
   DESTINATION_WORK: z.string().optional().default("Monash University Clayton VIC"),
 
+  // OpenRouter AI configuration
+  OPENROUTER_API_KEY: z.string().optional(),
+  OPENROUTER_MODEL: z.string().optional().default("anthropic/claude-3-haiku"),
+
   // Add your own environment variables here
   // Example S3 configuration (commented out by default):
   // S3_OPTIONS: stringToJSONSchema.pipe(
