@@ -5,6 +5,7 @@ import {
   UpdateFilterRuleInput,
   FilterRuleDto,
 } from "@/definitions/filterRule";
+import { validateFilterExpression } from "@/lib/filterExpression";
 
 export const filterRuleRouter = {
   list: commonProcedure
@@ -25,6 +26,10 @@ export const filterRuleRouter = {
     .input(CreateFilterRuleInput)
     .output(FilterRuleDto)
     .handler(async ({ input, context }) => {
+      const validation = validateFilterExpression(input.expression);
+      if (!validation.valid) {
+        throw new Error(`Invalid expression: ${validation.error}`);
+      }
       return context.cradle.filterRuleService.create(input);
     }),
 
@@ -32,6 +37,12 @@ export const filterRuleRouter = {
     .input(UpdateFilterRuleInput)
     .output(FilterRuleDto.nullable())
     .handler(async ({ input, context }) => {
+      if (input.expression) {
+        const validation = validateFilterExpression(input.expression);
+        if (!validation.valid) {
+          throw new Error(`Invalid expression: ${validation.error}`);
+        }
+      }
       const rule = await context.cradle.filterRuleService.update(input);
       return rule ?? null;
     }),
