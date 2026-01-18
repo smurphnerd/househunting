@@ -110,6 +110,15 @@ export const inspectionTimes = pgTable("inspection_times", {
   ...timestampFields,
 });
 
+export const filterRules = pgTable("filter_rules", {
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text().notNull(),
+  expression: text().notNull(),
+  ...timestampFields,
+});
+
 export const schema = {
   users,
   verifications,
@@ -117,4 +126,5 @@ export const schema = {
   sessions,
   properties,
   inspectionTimes,
+  filterRules,
 };
