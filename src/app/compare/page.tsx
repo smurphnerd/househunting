@@ -19,10 +19,8 @@ import type { PropertyDto } from "@/definitions/property";
 import {
   ArrowLeft,
   Scale,
-  Home,
   Check,
   X,
-  Minus,
   Building2,
   DollarSign,
   Car,

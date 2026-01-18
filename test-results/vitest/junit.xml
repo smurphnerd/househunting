@@ -1,137 +1,137 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="63" failures="0" errors="0" time="0.024773875">
-    <testsuite name="src/env-utils.test.ts" timestamp="2026-01-18T04:32:25.293Z" hostname="MacBook-Pro-4.local" tests="14" failures="0" errors="0" skipped="0" time="0.005393208">
-        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; parses valid JSON" time="0.001153459">
+<testsuites name="vitest tests" tests="63" failures="0" errors="0" time="0.025392376">
+    <testsuite name="src/env-utils.test.ts" timestamp="2026-01-18T05:32:20.671Z" hostname="MacBook-Pro-4.local" tests="14" failures="0" errors="0" skipped="0" time="0.006270667">
+        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; parses valid JSON" time="0.001405166">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; parses JSON arrays" time="0.000141792">
+        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; parses JSON arrays" time="0.000160041">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; rejects invalid JSON" time="0.000281708">
+        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; rejects invalid JSON" time="0.000319">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; rejects non-string input" time="0.000192333">
+        <testcase classname="src/env-utils.test.ts" name="stringToJSONSchema &gt; rejects non-string input" time="0.000232625">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts valid environment variables" time="0.000988583">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts valid environment variables" time="0.00110875">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts all valid NODE_ENV values" time="0.000210083">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts all valid NODE_ENV values" time="0.000247875">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; rejects invalid NODE_ENV" time="0.000167125">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; rejects invalid NODE_ENV" time="0.000182166">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts optional LOG_LEVEL" time="0.000097167">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts optional LOG_LEVEL" time="0.000142">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts all valid LOG_LEVEL values" time="0.000255334">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts all valid LOG_LEVEL values" time="0.000304334">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; rejects invalid LOG_LEVEL" time="0.000131042">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; rejects invalid LOG_LEVEL" time="0.0001485">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; requires APP_PASSWORD to be non-empty" time="0.000126209">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; requires APP_PASSWORD to be non-empty" time="0.000166292">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts SES as EMAIL_CONNECTION_URL" time="0.000093083">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; accepts SES as EMAIL_CONNECTION_URL" time="0.000106541">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; requires SMTP protocol for EMAIL_CONNECTION_URL" time="0.0001815">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; requires SMTP protocol for EMAIL_CONNECTION_URL" time="0.000201667">
         </testcase>
-        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; requires all mandatory fields" time="0.000448542">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/definitions/inspectionTime.test.ts" timestamp="2026-01-18T04:32:25.295Z" hostname="MacBook-Pro-4.local" tests="16" failures="0" errors="0" skipped="0" time="0.00594525">
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; accepts valid input" time="0.002102083">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; coerces date string to Date object" time="0.000249334">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects invalid propertyId (not UUID)" time="0.000325375">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects missing propertyId" time="0.000155958">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects missing dateTime" time="0.000117958">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects invalid date string" time="0.0000915">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; requires valid UUID for id" time="0.000248291">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts only id (other fields optional)" time="0.000079209">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts id with attended flag" time="0.000272">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts id with new dateTime" time="0.000457583">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; coerces date string for optional dateTime" time="0.000092167">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts both dateTime and attended updates" time="0.000095333">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; validates complete inspection time DTO" time="0.000227584">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; requires all fields" time="0.000247">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; requires valid UUIDs" time="0.000113375">
-        </testcase>
-        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; requires Date objects (not strings)" time="0.000127416">
+        <testcase classname="src/env-utils.test.ts" name="envSchema &gt; requires all mandatory fields" time="0.00056425">
         </testcase>
     </testsuite>
-    <testsuite name="src/definitions/property.test.ts" timestamp="2026-01-18T04:32:25.296Z" hostname="MacBook-Pro-4.local" tests="24" failures="0" errors="0" skipped="0" time="0.009937917">
-        <testcase classname="src/definitions/property.test.ts" name="PropertyStatus &gt; accepts valid statuses" time="0.000863583">
+    <testsuite name="src/definitions/inspectionTime.test.ts" timestamp="2026-01-18T05:32:20.672Z" hostname="MacBook-Pro-4.local" tests="16" failures="0" errors="0" skipped="0" time="0.00602475">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; accepts valid input" time="0.002460458">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="PropertyStatus &gt; rejects invalid status" time="0.000363">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; coerces date string to Date object" time="0.000267375">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="PropertyType &gt; accepts valid property types" time="0.000176791">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects invalid propertyId (not UUID)" time="0.000323958">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="PropertyType &gt; rejects invalid property type" time="0.000145083">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects missing propertyId" time="0.000153208">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="Aspect &gt; accepts valid aspects" time="0.000197375">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects missing dateTime" time="0.000131791">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="Aspect &gt; rejects invalid aspect" time="0.00009225">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="CreateInspectionTimeInput &gt; rejects invalid date string" time="0.000102875">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="StoveType &gt; accepts valid stove types" time="0.000178375">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; requires valid UUID for id" time="0.00024325">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="StoveType &gt; rejects invalid stove type" time="0.000093334">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts only id (other fields optional)" time="0.00008275">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; accepts valid input with address only" time="0.000744667">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts id with attended flag" time="0.000120542">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; accepts valid input with address and URL" time="0.000186958">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts id with new dateTime" time="0.000367583">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; rejects empty address" time="0.0001455">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; coerces date string for optional dateTime" time="0.000094667">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; rejects invalid URL" time="0.000135167">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="UpdateInspectionTimeInput &gt; accepts both dateTime and attended updates" time="0.000091125">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; accepts missing websiteUrl" time="0.000115625">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; validates complete inspection time DTO" time="0.000194709">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; requires valid UUID for id" time="0.00149275">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; requires all fields" time="0.000225">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; accepts valid UUID" time="0.0001505">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; requires valid UUIDs" time="0.000098">
         </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; transforms empty websiteUrl to null" time="0.000230459">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; accepts all optional fields" time="0.000336542">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; validates overallImpression range (1-5)" time="0.000321958">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; rejects negative prices" time="0.000149042">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; coerces date strings to Date objects for dateListed" time="0.000179208">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyFormSchema &gt; accepts Date objects for dateListed (form schema)" time="0.001070875">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyFormSchema &gt; does not transform websiteUrl (form schema has no transform)" time="0.000222375">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="PropertyDto &gt; validates complete property DTO" time="0.001055375">
-        </testcase>
-        <testcase classname="src/definitions/property.test.ts" name="PropertyDto &gt; accepts null for nullable fields" time="0.00014575">
+        <testcase classname="src/definitions/inspectionTime.test.ts" name="InspectionTimeDto &gt; requires Date objects (not strings)" time="0.00011475">
         </testcase>
     </testsuite>
-    <testsuite name="src/lib/filterExpression.test.ts" timestamp="2026-01-18T04:32:25.298Z" hostname="MacBook-Pro-4.local" tests="9" failures="0" errors="0" skipped="0" time="0.0034975">
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; validates simple comparison" time="0.001110083">
+    <testsuite name="src/definitions/property.test.ts" timestamp="2026-01-18T05:32:20.674Z" hostname="MacBook-Pro-4.local" tests="24" failures="0" errors="0" skipped="0" time="0.010058292">
+        <testcase classname="src/definitions/property.test.ts" name="PropertyStatus &gt; accepts valid statuses" time="0.000883083">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; validates boolean field comparison" time="0.00016">
+        <testcase classname="src/definitions/property.test.ts" name="PropertyStatus &gt; rejects invalid status" time="0.00035525">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; validates compound expression with &amp;&amp;" time="0.0001335">
+        <testcase classname="src/definitions/property.test.ts" name="PropertyType &gt; accepts valid property types" time="0.000181375">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; rejects type mismatch - number field with boolean" time="0.000181083">
+        <testcase classname="src/definitions/property.test.ts" name="PropertyType &gt; rejects invalid property type" time="0.000115167">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; rejects unknown field" time="0.000113875">
+        <testcase classname="src/definitions/property.test.ts" name="Aspect &gt; accepts valid aspects" time="0.000162625">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; evaluates price &lt; 350000 to true" time="0.000197625">
+        <testcase classname="src/definitions/property.test.ts" name="Aspect &gt; rejects invalid aspect" time="0.000099">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; evaluates price &gt; 350000 to false" time="0.000323125">
+        <testcase classname="src/definitions/property.test.ts" name="StoveType &gt; accepts valid stove types" time="0.000143875">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; evaluates compound &amp;&amp; expression" time="0.000248916">
+        <testcase classname="src/definitions/property.test.ts" name="StoveType &gt; rejects invalid stove type" time="0.00009725">
         </testcase>
-        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; handles null values gracefully" time="0.000114">
+        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; accepts valid input with address only" time="0.000803125">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; accepts valid input with address and URL" time="0.000207791">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; rejects empty address" time="0.000160709">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; rejects invalid URL" time="0.000135291">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="CreatePropertyInput &gt; accepts missing websiteUrl" time="0.00011325">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; requires valid UUID for id" time="0.001615125">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; accepts valid UUID" time="0.000156833">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; transforms empty websiteUrl to null" time="0.000212708">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; accepts all optional fields" time="0.000317917">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; validates overallImpression range (1-5)" time="0.000311625">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; rejects negative prices" time="0.000163625">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyInput &gt; coerces date strings to Date objects for dateListed" time="0.000198166">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyFormSchema &gt; accepts Date objects for dateListed (form schema)" time="0.000988375">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="UpdatePropertyFormSchema &gt; does not transform websiteUrl (form schema has no transform)" time="0.000151292">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="PropertyDto &gt; validates complete property DTO" time="0.00095125">
+        </testcase>
+        <testcase classname="src/definitions/property.test.ts" name="PropertyDto &gt; accepts null for nullable fields" time="0.000315083">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/filterExpression.test.ts" timestamp="2026-01-18T05:32:20.676Z" hostname="MacBook-Pro-4.local" tests="9" failures="0" errors="0" skipped="0" time="0.003038667">
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; validates simple comparison" time="0.001145584">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; validates boolean field comparison" time="0.000157958">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; validates compound expression with &amp;&amp;" time="0.000127">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; rejects type mismatch - number field with boolean" time="0.000182042">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; validateFilterExpression &gt; rejects unknown field" time="0.000110459">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; evaluates price &lt; 350000 to true" time="0.000160209">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; evaluates price &gt; 350000 to false" time="0.000084208">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; evaluates compound &amp;&amp; expression" time="0.000095041">
+        </testcase>
+        <testcase classname="src/lib/filterExpression.test.ts" name="filterExpression &gt; evaluateFilter &gt; handles null values gracefully" time="0.000082834">
         </testcase>
     </testsuite>
 </testsuites>
