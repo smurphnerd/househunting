@@ -35,6 +35,10 @@ export const envSchema = z.object({
   AUTH_SECRET: z.string(),
   APP_PASSWORD: z.string().min(1),
 
+  // Google Maps configuration
+  GOOGLE_MAPS_API_KEY: z.string().optional(),
+  DESTINATION_WORK: z.string().optional().default("Monash University Clayton VIC"),
+
   // Add your own environment variables here
   // Example S3 configuration (commented out by default):
   // S3_OPTIONS: stringToJSONSchema.pipe(
