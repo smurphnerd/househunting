@@ -209,7 +209,7 @@ function PropertyForm({ id }: { id: string }) {
                 if (data.bedrooms !== undefined) form.setValue("bedrooms", data.bedrooms);
                 if (data.bathrooms !== undefined) form.setValue("bathrooms", data.bathrooms);
                 if (data.squareMetres !== undefined) form.setValue("squareMetres", data.squareMetres);
-                if (data.propertyType !== undefined) form.setValue("propertyType", data.propertyType as any);
+                if (data.propertyType !== undefined) form.setValue("propertyType", data.propertyType as "apartment" | "unit" | "townhouse" | "house");
                 if (data.carParkIncluded !== undefined) form.setValue("carParkIncluded", data.carParkIncluded);
                 if (data.bodyCorpFees !== undefined) form.setValue("bodyCorpFees", data.bodyCorpFees);
                 if (data.agentName !== undefined) form.setValue("agentName", data.agentName);

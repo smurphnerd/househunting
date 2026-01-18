@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseFilterExpression, validateFilterExpression, evaluateFilter } from "./filterExpression";
+import { validateFilterExpression, evaluateFilter } from "./filterExpression";
 import type { PropertyDto } from "@/definitions/property";
 
 describe("filterExpression", () => {
@@ -43,7 +43,7 @@ describe("filterExpression", () => {
       squareMetres: 60,
       carParkIncluded: true,
       bodyCorpFees: 4000,
-    } as any;
+    } as PropertyDto;
 
     it("evaluates price < 350000 to true", () => {
       expect(evaluateFilter("price < 350000", mockProperty)).toBe(true);
