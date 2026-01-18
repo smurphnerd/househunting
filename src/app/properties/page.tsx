@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useORPC } from "@/lib/orpc.client";
@@ -22,8 +22,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FilterRulesManager } from "@/components/FilterRulesManager";
+import { evaluateFilter } from "@/lib/filterExpression";
 
 function AddPropertyDialog() {
   const [open, setOpen] = useState(false);
@@ -86,10 +95,15 @@ function AddPropertyDialog() {
   );
 }
 
-function PropertiesTable() {
+function PropertiesTable({
+  activeFilterId,
+  filterRules,
+}: {
+  activeFilterId: string | null;
+  filterRules: { id: string; name: string; expression: unknown }[];
+}) {
   const router = useRouter();
   const orpc = useORPC();
-  const queryClient = useQueryClient();
 
   const { data: properties, isLoading, refetch } = useQuery(
     orpc.property.list.queryOptions({ input: undefined })
@@ -101,6 +115,13 @@ function PropertiesTable() {
       refetch();
     },
   });
+
+  const activeRule = filterRules.find((r) => r.id === activeFilterId);
+
+  // Filter properties based on active rule
+  const filteredProperties = activeRule && properties
+    ? properties.filter((p) => evaluateFilter(activeRule.expression as string, p))
+    : properties;
 
   if (isLoading || !properties) {
     return <PropertiesLoading />;
@@ -126,14 +147,14 @@ function PropertiesTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {properties.length === 0 ? (
+        {filteredProperties?.length === 0 ? (
           <TableRow>
             <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-              No properties yet. Add your first property to get started.
+              {activeRule ? "No properties match this filter." : "No properties yet. Add your first property to get started."}
             </TableCell>
           </TableRow>
         ) : (
-          properties.map((property) => (
+          filteredProperties?.map((property) => (
             <TableRow
               key={property.id}
               className="cursor-pointer"
@@ -188,15 +209,64 @@ function PropertiesLoading() {
   );
 }
 
+function FilterControls({
+  activeFilterId,
+  setActiveFilterId,
+  filterRules,
+}: {
+  activeFilterId: string | null;
+  setActiveFilterId: (id: string | null) => void;
+  filterRules: { id: string; name: string }[];
+}) {
+  return (
+    <div className="flex gap-2 items-center">
+      <Select
+        value={activeFilterId ?? "all"}
+        onValueChange={(v) => setActiveFilterId(v === "all" ? null : v)}
+      >
+        <SelectTrigger className="w-[200px]">
+          <SelectValue placeholder="Filter properties" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Properties</SelectItem>
+          {filterRules.map((rule) => (
+            <SelectItem key={rule.id} value={rule.id}>
+              {rule.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <FilterRulesManager />
+    </div>
+  );
+}
+
 export default function PropertiesPage() {
+  const [activeFilterId, setActiveFilterId] = useState<string | null>(null);
+  const orpc = useORPC();
+
+  const { data: filterRules = [] } = useQuery(
+    orpc.filterRule.list.queryOptions({ input: undefined })
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Properties</h1>
-        <AddPropertyDialog />
+        <div className="flex gap-4 items-center">
+          <FilterControls
+            activeFilterId={activeFilterId}
+            setActiveFilterId={setActiveFilterId}
+            filterRules={filterRules}
+          />
+          <AddPropertyDialog />
+        </div>
       </div>
       <ErrorBoundary>
-        <PropertiesTable />
+        <PropertiesTable
+          activeFilterId={activeFilterId}
+          filterRules={filterRules}
+        />
       </ErrorBoundary>
     </div>
   );
