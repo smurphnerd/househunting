@@ -72,4 +72,34 @@ export const propertyRouter = {
 
       return distances;
     }),
+
+  autoFill: commonProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .output(z.object({
+      price: z.number().optional(),
+      bedrooms: z.number().optional(),
+      bathrooms: z.number().optional(),
+      squareMetres: z.number().optional(),
+      propertyType: z.string().optional(),
+      carParkIncluded: z.boolean().optional(),
+      bodyCorpFees: z.number().optional(),
+      agentName: z.string().optional(),
+      agentContact: z.string().optional(),
+    }))
+    .handler(async ({ input, context }) => {
+      const property = await context.cradle.propertyService.getById(input.id);
+      if (!property) {
+        throw new Error("Property not found");
+      }
+
+      if (!property.websiteUrl) {
+        throw new Error("Property has no website URL");
+      }
+
+      const extractedData = await context.cradle.openRouterService.extractPropertyData(
+        property.websiteUrl
+      );
+
+      return extractedData;
+    }),
 };
