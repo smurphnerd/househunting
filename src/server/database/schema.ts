@@ -6,6 +6,8 @@ import {
   timestamp,
   bigint,
   date,
+  real,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { timestampFields } from "./databaseUtils";
 
@@ -95,6 +97,11 @@ export const properties = pgTable("properties", {
   overallImpression: integer(),
   visibleIssues: text(),
   postInspectionNotes: text(),
+  // Distance fields
+  distanceToWork: real(),
+  nearestStation: jsonb().$type<{ distance: number; name: string; address: string }>(),
+  nearestSupermarket: jsonb().$type<{ distance: number; name: string; address: string }>(),
+  nearestGym: jsonb().$type<{ distance: number; name: string; address: string }>(),
   ...timestampFields,
 });
 

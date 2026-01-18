@@ -20,12 +20,59 @@ export type Aspect = z.infer<typeof Aspect>;
 export const StoveType = z.enum(["gas", "electric", "induction", "unknown"]);
 export type StoveType = z.infer<typeof StoveType>;
 
+export const NearbyPlace = z.object({
+  distance: z.number(),
+  name: z.string(),
+  address: z.string(),
+});
+export type NearbyPlace = z.infer<typeof NearbyPlace>;
+
 export const CreatePropertyInput = z.object({
   websiteUrl: z.string().url().optional(),
   address: z.string().min(1, "Address is required"),
 });
 export type CreatePropertyInput = z.infer<typeof CreatePropertyInput>;
 
+// Form schema for React Hook Form - using date type directly for form state
+export const UpdatePropertyFormSchema = z.object({
+  id: z.string().uuid(),
+  websiteUrl: z.union([z.string().url(), z.literal("")]).optional().nullable(),
+  address: z.string().min(1).optional(),
+  status: PropertyStatus.optional(),
+  propertyType: PropertyType.optional().nullable(),
+  price: z.number().int().positive().optional().nullable(),
+  bedrooms: z.number().int().min(0).optional().nullable(),
+  bathrooms: z.number().int().min(0).optional().nullable(),
+  squareMetres: z.number().int().positive().optional().nullable(),
+  ageYears: z.number().int().min(0).optional().nullable(),
+  previousPrice: z.number().int().positive().optional().nullable(),
+  carParkIncluded: z.boolean().optional().nullable(),
+  carParkCost: z.number().int().min(0).optional().nullable(),
+  bodyCorpFees: z.number().int().min(0).optional().nullable(),
+  councilRates: z.number().int().min(0).optional().nullable(),
+  estimatedRent: z.number().int().min(0).optional().nullable(),
+  petsAllowed: z.boolean().optional().nullable(),
+  storageIncluded: z.boolean().optional().nullable(),
+  aspect: Aspect.optional().nullable(),
+  agentName: z.string().optional().nullable(),
+  agentContact: z.string().optional().nullable(),
+  dateListed: z.date().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  desksFit: z.number().int().min(0).optional().nullable(),
+  hasLaundrySpace: z.boolean().optional().nullable(),
+  floorLevel: z.number().int().min(0).optional().nullable(),
+  goodLighting: z.boolean().optional().nullable(),
+  hasDishwasher: z.boolean().optional().nullable(),
+  stoveType: StoveType.optional().nullable(),
+  isQuiet: z.boolean().optional().nullable(),
+  hasAircon: z.boolean().optional().nullable(),
+  overallImpression: z.number().int().min(1).max(5).optional().nullable(),
+  visibleIssues: z.string().optional().nullable(),
+  postInspectionNotes: z.string().optional().nullable(),
+});
+export type UpdatePropertyFormValues = z.infer<typeof UpdatePropertyFormSchema>;
+
+// API schema with coerce for server-side (coerces strings to dates, empty strings to null)
 export const UpdatePropertyInput = z.object({
   id: z.string().uuid(),
   websiteUrl: z.union([z.string().url(), z.literal("")]).optional().nullable().transform(v => v === "" ? null : v),
@@ -61,6 +108,10 @@ export const UpdatePropertyInput = z.object({
   overallImpression: z.number().int().min(1).max(5).optional().nullable(),
   visibleIssues: z.string().optional().nullable(),
   postInspectionNotes: z.string().optional().nullable(),
+  distanceToWork: z.number().optional().nullable(),
+  nearestStation: NearbyPlace.optional().nullable(),
+  nearestSupermarket: NearbyPlace.optional().nullable(),
+  nearestGym: NearbyPlace.optional().nullable(),
 });
 export type UpdatePropertyInput = z.infer<typeof UpdatePropertyInput>;
 
@@ -99,6 +150,10 @@ export const PropertyDto = z.object({
   overallImpression: z.number().nullable(),
   visibleIssues: z.string().nullable(),
   postInspectionNotes: z.string().nullable(),
+  distanceToWork: z.number().nullable(),
+  nearestStation: NearbyPlace.nullable(),
+  nearestSupermarket: NearbyPlace.nullable(),
+  nearestGym: NearbyPlace.nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
