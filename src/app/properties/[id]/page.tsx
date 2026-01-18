@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/collapsible";
 import {
   UpdatePropertyInput,
+  UpdatePropertyFormSchema,
+  type UpdatePropertyFormValues,
   PropertyStatus,
   PropertyType,
   Aspect,
@@ -45,8 +47,8 @@ function PropertyForm({ id }: { id: string }) {
     orpc.property.getById.queryOptions({ input: { id } })
   );
 
-  const form = useForm<UpdatePropertyInput>({
-    resolver: zodResolver(UpdatePropertyInput),
+  const form = useForm<UpdatePropertyFormValues>({
+    resolver: zodResolver(UpdatePropertyFormSchema),
     defaultValues: {
       id,
       websiteUrl: "",
@@ -155,8 +157,10 @@ function PropertyForm({ id }: { id: string }) {
     return <div>Property not found</div>;
   }
 
-  function onSubmit(data: UpdatePropertyInput) {
-    updateMutation.mutate(data);
+  function onSubmit(data: UpdatePropertyFormValues) {
+    // Parse through UpdatePropertyInput to apply transforms (empty string to null)
+    const parsed = UpdatePropertyInput.parse(data);
+    updateMutation.mutate(parsed);
   }
 
   return (
@@ -188,6 +192,13 @@ function PropertyForm({ id }: { id: string }) {
           <div className="space-x-2">
             <Button type="submit" disabled={updateMutation.isPending}>
               {updateMutation.isPending ? "Saving..." : "Save"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push(`/compare?a=${id}`)}
+            >
+              Compare with...
             </Button>
             <Button
               type="button"
