@@ -55,7 +55,7 @@ export function AutoFillDialog({
   const orpc = useORPC();
 
   const extractMutation = useMutation({
-    mutationFn: () => orpc.property.autoFill.call({ input: { id: property.id } }),
+    mutationFn: () => orpc.property.autoFill.call({ id: property.id }),
     onSuccess: (data) => {
       setExtractedData(data);
 
@@ -111,7 +111,13 @@ export function AutoFillDialog({
     const selectedData: Partial<ExtractedData> = {};
     for (const diff of diffs) {
       if (diff.selected) {
-        selectedData[diff.key] = extractedData[diff.key];
+        const key = diff.key;
+        const value = extractedData[key];
+        if (value !== undefined) {
+          // Type assertion needed because TypeScript can't track the relationship
+          // between the key and value types through the loop
+          (selectedData as Record<keyof ExtractedData, unknown>)[key] = value;
+        }
       }
     }
 

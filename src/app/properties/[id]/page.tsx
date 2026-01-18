@@ -150,7 +150,7 @@ function PropertyForm({ id }: { id: string }) {
   });
 
   const calculateDistancesMutation = useMutation({
-    mutationFn: () => orpc.property.calculateDistances.call({ input: { id } }),
+    mutationFn: () => orpc.property.calculateDistances.call({ id }),
     onSuccess: () => {
       refetch();
       toast.success("Distances calculated");

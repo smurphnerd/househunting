@@ -65,10 +65,12 @@ export const propertyRouter = {
       );
 
       // Update property with calculated distances
-      await context.cradle.propertyService.update({
+      // Parse through UpdatePropertyInput to ensure proper types
+      const updateData = UpdatePropertyInput.parse({
         id: input.id,
         ...distances,
       });
+      await context.cradle.propertyService.update(updateData);
 
       return distances;
     }),
