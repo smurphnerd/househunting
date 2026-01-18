@@ -11,6 +11,7 @@ import { type Logger, pino } from "pino";
 import pinoPretty from "pino-pretty";
 
 import { type Drizzle, getDatabase } from "@/server/database/database";
+import { FilterRuleService } from "@/server/services/FilterRuleService";
 import { InspectionTimeService } from "@/server/services/InspectionTimeService";
 import { PropertyService } from "@/server/services/PropertyService";
 
@@ -24,6 +25,7 @@ export type Cradle = {
   logger: Logger;
   database: Drizzle;
   // Add your services here
+  filterRuleService: FilterRuleService;
   inspectionTimeService: InspectionTimeService;
   propertyService: PropertyService;
   // storage?: S3StorageAdapter;
@@ -70,6 +72,9 @@ if (process.env.NODE_ENV !== "test") {
     database: asFunction((deps: Cradle) =>
       getDatabase(deps.logger, env.DATABASE_URL),
     ).singleton(),
+
+    // Filter rule service
+    filterRuleService: asClass(FilterRuleService).singleton(),
 
     // Inspection time service
     inspectionTimeService: asClass(InspectionTimeService).singleton(),
