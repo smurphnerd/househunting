@@ -145,7 +145,7 @@ export default function PlannerPage() {
   const [bufferMinutes, setBufferMinutes] = useState(15);
 
   const planMutation = useMutation({
-    mutationFn: (input: { date: Date; bufferMinutes: number }) =>
+    mutationFn: (input: { date: string; bufferMinutes: number }) =>
       orpc.inspectionPlanner.planDay.call(input),
   });
 
@@ -153,8 +153,9 @@ export default function PlannerPage() {
     e.preventDefault();
     if (!date) return;
 
+    // Send date as string to avoid timezone issues
     planMutation.mutate({
-      date: new Date(date),
+      date,
       bufferMinutes,
     });
   }

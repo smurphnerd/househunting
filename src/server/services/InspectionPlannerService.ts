@@ -24,14 +24,14 @@ export class InspectionPlannerService {
   constructor(private deps: Cradle) {}
 
   async planInspections(
-    date: Date,
+    dateString: string,
     bufferMinutes: number = 15
   ): Promise<RouteOption[]> {
-    // Get start and end of day
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
+    // Parse date string "YYYY-MM-DD" as local midnight
+    // This ensures we search for the correct local day regardless of timezone
+    const [year, month, day] = dateString.split("-").map(Number);
+    const startOfDay = new Date(year, month - 1, day, 0, 0, 0, 0);
+    const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999);
 
     // Query inspection times for the date for shortlisted properties
     const inspections = await this.deps.database

@@ -21,7 +21,8 @@ const RouteOptionSchema = z.object({
 export const inspectionPlannerRouter = {
   planDay: commonProcedure
     .input(z.object({
-      date: z.coerce.date(),
+      // Accept date as string "YYYY-MM-DD" to avoid timezone confusion
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
       bufferMinutes: z.number().min(0).max(60).default(15),
     }))
     .output(z.array(RouteOptionSchema))
