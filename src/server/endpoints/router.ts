@@ -1,6 +1,7 @@
 import { commonProcedure } from "@/server/endpoints/procedure";
 import { propertyRouter } from "@/server/endpoints/propertyRouter";
 import { inspectionTimeRouter } from "@/server/endpoints/inspectionTimeRouter";
+import { filterRuleRouter } from "@/server/endpoints/filterRuleRouter";
 
 /**
  * Main application router
@@ -17,6 +18,9 @@ export const appRouter = {
 
   // Inspection time management router
   inspectionTime: inspectionTimeRouter,
+
+  // Filter rule management router
+  filterRule: filterRuleRouter,
 
   // Add your routers here:
   // posts: postsRouter,
