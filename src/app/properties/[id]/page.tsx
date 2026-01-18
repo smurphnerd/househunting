@@ -43,7 +43,7 @@ function PropertyForm({ id }: { id: string }) {
   const orpc = useORPC();
   const queryClient = useQueryClient();
 
-  const { data: property, isLoading } = useQuery(
+  const { data: property, isLoading, refetch } = useQuery(
     orpc.property.getById.queryOptions({ input: { id } })
   );
 
@@ -145,6 +145,17 @@ function PropertyForm({ id }: { id: string }) {
     mutationFn: () => orpc.property.delete.call({ id }),
     onSuccess: () => {
       router.push("/properties");
+    },
+  });
+
+  const calculateDistancesMutation = useMutation({
+    mutationFn: () => orpc.property.calculateDistances.call({ input: { id } }),
+    onSuccess: () => {
+      refetch();
+      toast.success("Distances calculated");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -888,6 +899,69 @@ function PropertyForm({ id }: { id: string }) {
             </CollapsibleContent>
           </Card>
         </Collapsible>
+
+        {/* Distance Information */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Distances</CardTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => calculateDistancesMutation.mutate()}
+              disabled={calculateDistancesMutation.isPending}
+            >
+              {calculateDistancesMutation.isPending ? "Calculating..." : "Calculate Distances"}
+            </Button>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Distance to Work</p>
+              <p className="font-medium">
+                {property.distanceToWork ? `${property.distanceToWork.toFixed(1)} km` : "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Nearest Station</p>
+              {property.nearestStation ? (
+                <div>
+                  <p className="font-medium">{property.nearestStation.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {property.nearestStation.distance.toFixed(1)} km
+                  </p>
+                </div>
+              ) : (
+                <p>-</p>
+              )}
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Nearest Supermarket</p>
+              {property.nearestSupermarket ? (
+                <div>
+                  <p className="font-medium">{property.nearestSupermarket.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {property.nearestSupermarket.distance.toFixed(1)} km
+                  </p>
+                </div>
+              ) : (
+                <p>-</p>
+              )}
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Nearest Gym</p>
+              {property.nearestGym ? (
+                <div>
+                  <p className="font-medium">{property.nearestGym.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {property.nearestGym.distance.toFixed(1)} km
+                  </p>
+                </div>
+              ) : (
+                <p>-</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
       </form>
     </Form>
