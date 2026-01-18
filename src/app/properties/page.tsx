@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Scale, Calendar } from "lucide-react";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
@@ -254,6 +256,18 @@ export default function PropertiesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Properties</h1>
         <div className="flex gap-4 items-center">
+          <Link href="/compare">
+            <Button variant="outline">
+              <Scale className="mr-2 h-4 w-4" />
+              Compare
+            </Button>
+          </Link>
+          <Link href="/planner">
+            <Button variant="outline">
+              <Calendar className="mr-2 h-4 w-4" />
+              Day Planner
+            </Button>
+          </Link>
           <FilterControls
             activeFilterId={activeFilterId}
             setActiveFilterId={setActiveFilterId}
