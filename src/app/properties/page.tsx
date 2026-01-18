@@ -17,6 +17,11 @@ import {
   Filter,
   Home,
   LogOut,
+  LayoutGrid,
+  List,
+  ChevronRight,
+  DollarSign,
+  Building2,
 } from "lucide-react";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { useORPC } from "@/lib/orpc.client";
@@ -41,6 +46,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterRulesManager } from "@/components/FilterRulesManager";
 import { evaluateFilter } from "@/lib/filterExpression";
 import { logout } from "@/lib/auth";
+
+type ViewMode = "grid" | "table";
+
+interface Property {
+  id: string;
+  address: string;
+  status: string;
+  price: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  squareMetres: number | null;
+  bodyCorpFees: number | null;
+  councilRates: number | null;
+  dateListed: Date | null;
+  websiteUrl: string | null;
+  propertyType: string | null;
+  overallImpression: number | null;
+}
 
 function AddPropertyDialog() {
   const [open, setOpen] = useState(false);
@@ -124,18 +147,7 @@ function PropertyCard({
   property,
   onDelete,
 }: {
-  property: {
-    id: string;
-    address: string;
-    status: string;
-    price: number | null;
-    bedrooms: number | null;
-    bathrooms: number | null;
-    squareMetres: number | null;
-    bodyCorpFees: number | null;
-    dateListed: Date | null;
-    websiteUrl: string | null;
-  };
+  property: Property;
   onDelete: () => void;
 }) {
   const router = useRouter();
@@ -212,12 +224,154 @@ function PropertyCard({
   );
 }
 
-function PropertiesGrid({
+function PropertyTable({
+  properties,
+  onDelete,
+}: {
+  properties: Property[];
+  onDelete: (id: string) => void;
+}) {
+  const router = useRouter();
+
+  function formatPrice(price: number | null) {
+    if (price === null) return "-";
+    return `$${price.toLocaleString()}`;
+  }
+
+  function formatCurrency(value: number | null) {
+    if (value === null) return "-";
+    return `$${value.toLocaleString()}`;
+  }
+
+  return (
+    <div className="bg-card border border-border rounded-xl overflow-hidden animate-fade-in">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-border bg-muted/30">
+              <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Status</th>
+              <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Address</th>
+              <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <DollarSign className="w-3.5 h-3.5" />
+                  Price
+                </span>
+              </th>
+              <th className="text-center px-4 py-3 text-sm font-medium text-muted-foreground">
+                <span className="flex items-center justify-center gap-1">
+                  <Bed className="w-3.5 h-3.5" />
+                  Beds
+                </span>
+              </th>
+              <th className="text-center px-4 py-3 text-sm font-medium text-muted-foreground">
+                <span className="flex items-center justify-center gap-1">
+                  <Bath className="w-3.5 h-3.5" />
+                  Baths
+                </span>
+              </th>
+              <th className="text-center px-4 py-3 text-sm font-medium text-muted-foreground">
+                <span className="flex items-center justify-center gap-1">
+                  <Ruler className="w-3.5 h-3.5" />
+                  Size
+                </span>
+              </th>
+              <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Building2 className="w-3.5 h-3.5" />
+                  Type
+                </span>
+              </th>
+              <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Body Corp</th>
+              <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Council</th>
+              <th className="text-center px-4 py-3 text-sm font-medium text-muted-foreground">Rating</th>
+              <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {properties.map((property, index) => (
+              <tr
+                key={property.id}
+                className="hover:bg-muted/30 cursor-pointer transition-colors group"
+                onClick={() => router.push(`/properties/${property.id}`)}
+                style={{ animationDelay: `${index * 30}ms` }}
+              >
+                <td className="px-4 py-3">
+                  <StatusBadge status={property.status} />
+                </td>
+                <td className="px-4 py-3">
+                  <div className="max-w-[250px]">
+                    <p className="font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                      {property.address}
+                    </p>
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="font-serif text-foreground">
+                    {formatPrice(property.price)}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-center text-muted-foreground">
+                  {property.bedrooms ?? "-"}
+                </td>
+                <td className="px-4 py-3 text-center text-muted-foreground">
+                  {property.bathrooms ?? "-"}
+                </td>
+                <td className="px-4 py-3 text-center text-muted-foreground">
+                  {property.squareMetres ? `${property.squareMetres}m²` : "-"}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground capitalize">
+                  {property.propertyType ?? "-"}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground text-sm">
+                  {property.bodyCorpFees ? `${formatCurrency(property.bodyCorpFees)}/yr` : "-"}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground text-sm">
+                  {property.councilRates ? `${formatCurrency(property.councilRates)}/yr` : "-"}
+                </td>
+                <td className="px-4 py-3 text-center">
+                  {property.overallImpression ? (
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                      {property.overallImpression}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm("Delete this property?")) {
+                          onDelete(property.id);
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function PropertiesView({
   activeFilterId,
   filterRules,
+  viewMode,
 }: {
   activeFilterId: string | null;
   filterRules: { id: string; name: string; expression: unknown }[];
+  viewMode: ViewMode;
 }) {
   const orpc = useORPC();
 
@@ -242,7 +396,7 @@ function PropertiesGrid({
       : properties;
 
   if (isLoading || !properties) {
-    return <PropertiesLoading />;
+    return <PropertiesLoading viewMode={viewMode} />;
   }
 
   if (filteredProperties?.length === 0) {
@@ -263,6 +417,15 @@ function PropertiesGrid({
     );
   }
 
+  if (viewMode === "table") {
+    return (
+      <PropertyTable
+        properties={filteredProperties as Property[]}
+        onDelete={(id) => deleteMutation.mutate(id)}
+      />
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {filteredProperties?.map((property, index) => (
@@ -272,7 +435,7 @@ function PropertiesGrid({
           className="opacity-0 animate-fade-in-up"
         >
           <PropertyCard
-            property={property}
+            property={property as Property}
             onDelete={() => deleteMutation.mutate(property.id)}
           />
         </div>
@@ -281,7 +444,22 @@ function PropertiesGrid({
   );
 }
 
-function PropertiesLoading() {
+function PropertiesLoading({ viewMode }: { viewMode: ViewMode }) {
+  if (viewMode === "table") {
+    return (
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="p-4 space-y-3">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {[...Array(6)].map((_, i) => (
@@ -296,6 +474,41 @@ function PropertiesLoading() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ViewToggle({
+  viewMode,
+  setViewMode,
+}: {
+  viewMode: ViewMode;
+  setViewMode: (mode: ViewMode) => void;
+}) {
+  return (
+    <div className="flex items-center bg-muted rounded-lg p-1">
+      <button
+        onClick={() => setViewMode("grid")}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+          viewMode === "grid"
+            ? "bg-background text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <LayoutGrid className="w-4 h-4" />
+        <span className="hidden sm:inline">Grid</span>
+      </button>
+      <button
+        onClick={() => setViewMode("table")}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+          viewMode === "table"
+            ? "bg-background text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        <List className="w-4 h-4" />
+        <span className="hidden sm:inline">Table</span>
+      </button>
     </div>
   );
 }
@@ -335,6 +548,7 @@ function FilterControls({
 
 export default function PropertiesPage() {
   const [activeFilterId, setActiveFilterId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const orpc = useORPC();
   const router = useRouter();
 
@@ -412,6 +626,7 @@ export default function PropertiesPage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
+              <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
               <FilterControls
                 activeFilterId={activeFilterId}
                 setActiveFilterId={setActiveFilterId}
@@ -438,11 +653,12 @@ export default function PropertiesPage() {
           )}
         </div>
 
-        {/* Properties grid */}
+        {/* Properties view */}
         <ErrorBoundary>
-          <PropertiesGrid
+          <PropertiesView
             activeFilterId={activeFilterId}
             filterRules={filterRules}
+            viewMode={viewMode}
           />
         </ErrorBoundary>
       </main>
