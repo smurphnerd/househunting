@@ -14,6 +14,7 @@ import { type Drizzle, getDatabase } from "@/server/database/database";
 import { FilterRuleService } from "@/server/services/FilterRuleService";
 import { GoogleMapsService } from "@/server/services/GoogleMapsService";
 import { InspectionTimeService } from "@/server/services/InspectionTimeService";
+import { OpenRouterService } from "@/server/services/OpenRouterService";
 import { PropertyService } from "@/server/services/PropertyService";
 
 /**
@@ -29,6 +30,7 @@ export type Cradle = {
   filterRuleService: FilterRuleService;
   googleMapsService: GoogleMapsService;
   inspectionTimeService: InspectionTimeService;
+  openRouterService: OpenRouterService;
   propertyService: PropertyService;
   // storage?: S3StorageAdapter;
   // email?: EmailAdapter;
@@ -83,6 +85,9 @@ if (process.env.NODE_ENV !== "test") {
 
     // Inspection time service
     inspectionTimeService: asClass(InspectionTimeService).singleton(),
+
+    // OpenRouter AI service
+    openRouterService: asClass(OpenRouterService).singleton(),
 
     // Property service
     propertyService: asClass(PropertyService).singleton(),
