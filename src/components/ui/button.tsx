@@ -48,7 +48,7 @@ function Button({
     isPending?: boolean;
     asChild?: boolean;
   }) {
-  const Comp = asChild ? SlotPrimitive.Slot : "button";
+  const Comp = asChild ? SlotPrimitive : "button";
 
   return (
     <Comp

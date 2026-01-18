@@ -43,7 +43,7 @@ export function EmailVerificationEmail({
             </Button>
           </Section>
           <Text style={text}>
-            If you didn't create an account, you can safely ignore this email.
+            If you did not create an account, you can safely ignore this email.
           </Text>
         </Container>
       </Body>
