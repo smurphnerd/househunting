@@ -12,6 +12,7 @@ import pinoPretty from "pino-pretty";
 
 import { type Drizzle, getDatabase } from "@/server/database/database";
 import { FilterRuleService } from "@/server/services/FilterRuleService";
+import { GoogleMapsService } from "@/server/services/GoogleMapsService";
 import { InspectionTimeService } from "@/server/services/InspectionTimeService";
 import { PropertyService } from "@/server/services/PropertyService";
 
@@ -26,6 +27,7 @@ export type Cradle = {
   database: Drizzle;
   // Add your services here
   filterRuleService: FilterRuleService;
+  googleMapsService: GoogleMapsService;
   inspectionTimeService: InspectionTimeService;
   propertyService: PropertyService;
   // storage?: S3StorageAdapter;
@@ -75,6 +77,9 @@ if (process.env.NODE_ENV !== "test") {
 
     // Filter rule service
     filterRuleService: asClass(FilterRuleService).singleton(),
+
+    // Google Maps service
+    googleMapsService: asClass(GoogleMapsService).singleton(),
 
     // Inspection time service
     inspectionTimeService: asClass(InspectionTimeService).singleton(),
