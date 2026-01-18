@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { InspectionTimes } from "@/components/InspectionTimes";
+import { AutoFillDialog } from "@/components/AutoFillDialog";
 import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -201,6 +202,20 @@ function PropertyForm({ id }: { id: string }) {
             />
           </div>
           <div className="space-x-2">
+            <AutoFillDialog
+              property={property}
+              onApply={(data) => {
+                if (data.price !== undefined) form.setValue("price", data.price);
+                if (data.bedrooms !== undefined) form.setValue("bedrooms", data.bedrooms);
+                if (data.bathrooms !== undefined) form.setValue("bathrooms", data.bathrooms);
+                if (data.squareMetres !== undefined) form.setValue("squareMetres", data.squareMetres);
+                if (data.propertyType !== undefined) form.setValue("propertyType", data.propertyType as any);
+                if (data.carParkIncluded !== undefined) form.setValue("carParkIncluded", data.carParkIncluded);
+                if (data.bodyCorpFees !== undefined) form.setValue("bodyCorpFees", data.bodyCorpFees);
+                if (data.agentName !== undefined) form.setValue("agentName", data.agentName);
+                if (data.agentContact !== undefined) form.setValue("agentContact", data.agentContact);
+              }}
+            />
             <Button type="submit" disabled={updateMutation.isPending}>
               {updateMutation.isPending ? "Saving..." : "Save"}
             </Button>
