@@ -13,6 +13,7 @@ import pinoPretty from "pino-pretty";
 import { type Drizzle, getDatabase } from "@/server/database/database";
 import { FilterRuleService } from "@/server/services/FilterRuleService";
 import { GoogleMapsService } from "@/server/services/GoogleMapsService";
+import { InspectionPlannerService } from "@/server/services/InspectionPlannerService";
 import { InspectionTimeService } from "@/server/services/InspectionTimeService";
 import { OpenRouterService } from "@/server/services/OpenRouterService";
 import { PropertyService } from "@/server/services/PropertyService";
@@ -29,6 +30,7 @@ export type Cradle = {
   // Add your services here
   filterRuleService: FilterRuleService;
   googleMapsService: GoogleMapsService;
+  inspectionPlannerService: InspectionPlannerService;
   inspectionTimeService: InspectionTimeService;
   openRouterService: OpenRouterService;
   propertyService: PropertyService;
@@ -82,6 +84,9 @@ if (process.env.NODE_ENV !== "test") {
 
     // Google Maps service
     googleMapsService: asClass(GoogleMapsService).singleton(),
+
+    // Inspection planner service
+    inspectionPlannerService: asClass(InspectionPlannerService).singleton(),
 
     // Inspection time service
     inspectionTimeService: asClass(InspectionTimeService).singleton(),
