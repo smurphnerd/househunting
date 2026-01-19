@@ -24,15 +24,6 @@ export const envSchema = z.object({
   BASE_URL: z.string(),
   DATABASE_URL: z.string(),
 
-  // Email configuration
-  EMAIL_CONNECTION_URL: z.union([
-    z.url({ protocol: /^smtp$/ }),
-    z.literal("ses"),
-  ]),
-  SYSTEM_EMAIL_FROM: z.string(),
-
-  // Authentication
-  AUTH_SECRET: z.string(),
   APP_PASSWORD: z.string().min(1),
 
   // Google Maps configuration

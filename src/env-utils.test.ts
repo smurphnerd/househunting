@@ -35,9 +35,6 @@ describe("envSchema", () => {
     GIT_SHA: "abc123",
     BASE_URL: "http://localhost:3000",
     DATABASE_URL: "postgres://localhost:5432/db",
-    EMAIL_CONNECTION_URL: "smtp://localhost:587",
-    SYSTEM_EMAIL_FROM: "noreply@example.com",
-    AUTH_SECRET: "super-secret-key",
     APP_PASSWORD: "password123",
   };
 
@@ -98,22 +95,6 @@ describe("envSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts SES as EMAIL_CONNECTION_URL", () => {
-    const result = envSchema.safeParse({
-      ...validEnv,
-      EMAIL_CONNECTION_URL: "ses",
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("requires SMTP protocol for EMAIL_CONNECTION_URL", () => {
-    // Invalid protocol
-    const result = envSchema.safeParse({
-      ...validEnv,
-      EMAIL_CONNECTION_URL: "http://localhost:587",
-    });
-    expect(result.success).toBe(false);
-  });
 
   it("requires all mandatory fields", () => {
     const mandatoryFields = [
@@ -121,9 +102,6 @@ describe("envSchema", () => {
       "GIT_SHA",
       "BASE_URL",
       "DATABASE_URL",
-      "EMAIL_CONNECTION_URL",
-      "SYSTEM_EMAIL_FROM",
-      "AUTH_SECRET",
       "APP_PASSWORD",
     ];
 
