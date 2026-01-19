@@ -5,17 +5,21 @@ import { commonProcedure } from "@/server/endpoints/procedure";
 const InspectionSlotSchema = z.object({
   propertyId: z.string(),
   address: z.string(),
-  inspectionTime: z.date(),
+  inspectionWindowStart: z.date(),
+  inspectionWindowEnd: z.date().nullable(),
   arrivalTime: z.date(),
+  inspectionStartTime: z.date(),
+  inspectionEndTime: z.date(),
   departureTime: z.date(),
   drivingTimeFromPrevious: z.number(),
 });
 
 const RouteOptionSchema = z.object({
-  inspections: z.array(InspectionSlotSchema),
+  name: z.string(),
+  description: z.string(),
+  slots: z.array(InspectionSlotSchema),
   totalDrivingTime: z.number(),
   totalInspections: z.number(),
-  description: z.string(),
 });
 
 export const inspectionPlannerRouter = {

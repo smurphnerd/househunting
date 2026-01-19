@@ -7,17 +7,23 @@ import { inspectionTimes, properties } from "@/server/database/schema";
 export type InspectionSlot = {
   propertyId: string;
   address: string;
-  inspectionTime: Date;
-  arrivalTime: Date;
-  departureTime: Date;
-  drivingTimeFromPrevious: number;
+  // Inspection window from listing
+  inspectionWindowStart: Date;
+  inspectionWindowEnd: Date | null;
+  // Calculated times
+  arrivalTime: Date; // When we arrive at property
+  inspectionStartTime: Date; // When we start inspecting
+  inspectionEndTime: Date; // When we finish inspecting
+  departureTime: Date; // When we're back at the car
+  drivingTimeFromPrevious: number; // Minutes
 };
 
 export type RouteOption = {
-  inspections: InspectionSlot[];
+  name: string;
+  description: string;
+  slots: InspectionSlot[];
   totalDrivingTime: number;
   totalInspections: number;
-  description: string;
 };
 
 export class InspectionPlannerService {
