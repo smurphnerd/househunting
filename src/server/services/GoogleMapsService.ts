@@ -42,7 +42,7 @@ export class GoogleMapsService {
       this.findNearestPlaceByKeyword(propertyAddress, "gym", ["Anytime Fitness"]),
     ]);
 
-    this.deps.logger.info({
+    this.deps.logger.debug({
       distanceToWork,
       nearestStation,
       nearestSupermarket,
@@ -219,7 +219,7 @@ export class GoogleMapsService {
         }
       }
 
-      this.deps.logger.info({ closestPlace }, "Found closest place by keyword");
+      this.deps.logger.debug({ closestPlace }, "Found closest place by keyword");
       return closestPlace;
     } catch (error) {
       this.deps.logger.error({ error, type, keywords }, "Failed to find nearest place by keyword");
