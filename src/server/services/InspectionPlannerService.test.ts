@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 // Mock the env module before importing the service
 vi.mock("@/env", () => ({
@@ -7,30 +7,36 @@ vi.mock("@/env", () => ({
   },
 }));
 
-import {
-  InspectionPlannerService,
-  PlannerConfig,
-  InspectionSlot,
-} from "./InspectionPlannerService";
+import { InspectionPlannerService, PlannerConfig } from "./InspectionPlannerService";
 import type { Cradle } from "@/server/initialization";
 
+// Mock database chain type
+interface MockDbChain {
+  select: ReturnType<typeof vi.fn>;
+  from: ReturnType<typeof vi.fn>;
+  innerJoin: ReturnType<typeof vi.fn>;
+  where: ReturnType<typeof vi.fn>;
+  orderBy: ReturnType<typeof vi.fn>;
+}
+
 // Helper to create a mock Cradle with minimal dependencies
-function createMockCradle(overrides: Partial<Cradle> = {}): Cradle {
+function createMockCradle(mockInspections: unknown[] = []): Cradle {
+  const mockDbChain: MockDbChain = {
+    select: vi.fn().mockReturnThis(),
+    from: vi.fn().mockReturnThis(),
+    innerJoin: vi.fn().mockReturnThis(),
+    where: vi.fn().mockReturnThis(),
+    orderBy: vi.fn().mockResolvedValue(mockInspections),
+  };
+
   return {
-    database: {
-      select: vi.fn().mockReturnThis(),
-      from: vi.fn().mockReturnThis(),
-      innerJoin: vi.fn().mockReturnThis(),
-      where: vi.fn().mockReturnThis(),
-      orderBy: vi.fn().mockResolvedValue([]),
-    },
+    database: mockDbChain,
     logger: {
       info: vi.fn(),
       error: vi.fn(),
       warn: vi.fn(),
       debug: vi.fn(),
     },
-    ...overrides,
   } as unknown as Cradle;
 }
 
@@ -53,11 +59,7 @@ describe("InspectionPlannerService", () => {
           endDateTime: createTime(13, 30), // 1:30pm
         };
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue([
-          mockInspection,
-        ]);
-
+        const mockCradle = createMockCradle([mockInspection]);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 5,
@@ -96,11 +98,7 @@ describe("InspectionPlannerService", () => {
           endDateTime: null,
         };
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue([
-          mockInspection,
-        ]);
-
+        const mockCradle = createMockCradle([mockInspection]);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 10,
@@ -152,11 +150,7 @@ describe("InspectionPlannerService", () => {
           },
         ];
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue(
-          mockInspections
-        );
-
+        const mockCradle = createMockCradle(mockInspections);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 5,
@@ -196,11 +190,7 @@ describe("InspectionPlannerService", () => {
           endDateTime: createTime(14, 30),
         };
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue([
-          mockInspection,
-        ]);
-
+        const mockCradle = createMockCradle([mockInspection]);
         const service = new InspectionPlannerService(mockCradle);
 
         // Test with different post-buffer values
@@ -232,11 +222,7 @@ describe("InspectionPlannerService", () => {
           endDateTime: createTime(15, 45),
         };
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue([
-          mockInspection,
-        ]);
-
+        const mockCradle = createMockCradle([mockInspection]);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 7,
@@ -287,11 +273,7 @@ describe("InspectionPlannerService", () => {
           },
         ];
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue(
-          mockInspections
-        );
-
+        const mockCradle = createMockCradle(mockInspections);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 5,
@@ -335,11 +317,7 @@ describe("InspectionPlannerService", () => {
           },
         ];
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue(
-          mockInspections
-        );
-
+        const mockCradle = createMockCradle(mockInspections);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 5,
@@ -376,11 +354,7 @@ describe("InspectionPlannerService", () => {
           },
         ];
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue(
-          mockInspections
-        );
-
+        const mockCradle = createMockCradle(mockInspections);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 5,
@@ -408,9 +382,7 @@ describe("InspectionPlannerService", () => {
 
     describe("edge cases", () => {
       it("returns empty array when no inspections found", async () => {
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-
+        const mockCradle = createMockCradle([]);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 5,
@@ -432,11 +404,7 @@ describe("InspectionPlannerService", () => {
           endDateTime: createTime(14, 30),
         };
 
-        const mockCradle = createMockCradle();
-        (mockCradle.database.orderBy as ReturnType<typeof vi.fn>).mockResolvedValue([
-          mockInspection,
-        ]);
-
+        const mockCradle = createMockCradle([mockInspection]);
         const service = new InspectionPlannerService(mockCradle);
         const config: PlannerConfig = {
           preBufferMinutes: 0,
