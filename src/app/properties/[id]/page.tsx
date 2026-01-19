@@ -335,9 +335,11 @@ function PropertyForm({ id }: { id: string }) {
                       control={form.control}
                       name="status"
                       render={({ field }) => (
-                        <Select value={field.value ?? "saved"} onValueChange={field.onChange}>
+                        <Select value={field.value || "saved"} onValueChange={field.onChange}>
                           <SelectTrigger className="w-[140px] h-9">
-                            <SelectValue />
+                            <SelectValue placeholder="Select status">
+                              {field.value ? field.value.charAt(0).toUpperCase() + field.value.slice(1) : "Saved"}
+                            </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
                             {PropertyStatus.options.map((status) => (
