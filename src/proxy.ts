@@ -1,4 +1,4 @@
-// src/middleware.ts
+// src/proxy.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -7,7 +7,7 @@ const AUTH_COOKIE_VALUE = "authenticated";
 
 const PUBLIC_PATHS = ["/", "/api/auth/login", "/api/auth/logout"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths

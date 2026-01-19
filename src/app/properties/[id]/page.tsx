@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { InspectionTimes } from "@/components/InspectionTimes";
 import { AutoFillDialog } from "@/components/AutoFillDialog";
-import { StatusBadge } from "@/components/StatusBadge";
 import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

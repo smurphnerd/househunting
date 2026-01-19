@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
+    "check": "pnpm lint:fix && pnpm typecheck && pnpm build",
     "db:push": "drizzle-kit push",
     "test": "vitest run",
     "email": "email dev --dir src/email --port 3100"
