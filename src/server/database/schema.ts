@@ -112,7 +112,8 @@ export const inspectionTimes = pgTable("inspection_times", {
   propertyId: text()
     .notNull()
     .references(() => properties.id, { onDelete: "cascade" }),
-  dateTime: timestamp().notNull(),
+  dateTime: timestamp().notNull(), // Start time of the inspection window
+  endDateTime: timestamp(), // End time of the inspection window (nullable for backwards compatibility)
   attended: boolean().notNull().default(false),
   ...timestampFields,
 });
