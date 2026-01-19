@@ -27,13 +27,19 @@ export const inspectionPlannerRouter = {
     .input(z.object({
       // Accept date as string "YYYY-MM-DD" to avoid timezone confusion
       date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-      bufferMinutes: z.number().min(0).max(60).default(15),
+      preBufferMinutes: z.number().min(0).max(30).default(5),
+      postBufferMinutes: z.number().min(0).max(30).default(5),
+      inspectionDurationMinutes: z.number().min(5).max(60).default(10),
     }))
     .output(z.array(RouteOptionSchema))
     .handler(async ({ input, context }) => {
       return context.cradle.inspectionPlannerService.planInspections(
         input.date,
-        input.bufferMinutes
+        {
+          preBufferMinutes: input.preBufferMinutes,
+          postBufferMinutes: input.postBufferMinutes,
+          inspectionDurationMinutes: input.inspectionDurationMinutes,
+        }
       );
     }),
 };
