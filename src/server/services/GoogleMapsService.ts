@@ -31,12 +31,21 @@ export class GoogleMapsService {
       throw new Error("Google Maps API key not configured");
     }
 
+    this.deps.logger.info({ propertyAddress }, "Starting distance calculations");
+
     const [distanceToWork, nearestStation, nearestSupermarket, nearestGym] = await Promise.all([
       this.getDistanceToDestination(propertyAddress, this.workAddress),
       this.findNearestPlace(propertyAddress, "train_station"),
       this.findNearestPlace(propertyAddress, "supermarket"),
       this.findNearestPlace(propertyAddress, "gym"),
     ]);
+
+    this.deps.logger.info({
+      distanceToWork,
+      nearestStation,
+      nearestSupermarket,
+      nearestGym
+    }, "Distance calculation results");
 
     return {
       distanceToWork,
