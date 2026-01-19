@@ -22,17 +22,21 @@ import {
 interface InspectionSlot {
   propertyId: string;
   address: string;
-  inspectionTime: Date;
+  inspectionWindowStart: Date;
+  inspectionWindowEnd: Date | null;
   arrivalTime: Date;
+  inspectionStartTime: Date;
+  inspectionEndTime: Date;
   departureTime: Date;
   drivingTimeFromPrevious: number;
 }
 
 interface RouteOption {
-  inspections: InspectionSlot[];
+  name: string;
+  description: string;
+  slots: InspectionSlot[];
   totalDrivingTime: number;
   totalInspections: number;
-  description: string;
 }
 
 function formatTime(date: Date): string {
@@ -104,21 +108,21 @@ function RouteOptionCard({
       {/* Expanded content */}
       {expanded && (
         <div className="border-t border-border">
-          {option.inspections.length === 0 ? (
+          {option.slots.length === 0 ? (
             <div className="px-6 py-8 text-center text-muted-foreground">
               No inspections scheduled for this route.
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {option.inspections.map((inspection, inspectionIndex) => (
+              {option.slots.map((slot, slotIndex) => (
                 <div
-                  key={`${inspection.propertyId}-${inspectionIndex}`}
+                  key={`${slot.propertyId}-${slotIndex}`}
                   className="px-6 py-4 flex items-start gap-4"
                 >
                   {/* Timeline indicator */}
                   <div className="flex flex-col items-center pt-1">
                     <div className="w-3 h-3 rounded-full bg-primary" />
-                    {inspectionIndex < option.inspections.length - 1 && (
+                    {slotIndex < option.slots.length - 1 && (
                       <div className="w-0.5 h-full bg-border mt-2" />
                     )}
                   </div>
@@ -126,25 +130,25 @@ function RouteOptionCard({
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground truncate">
-                      {inspection.address}
+                      {slot.address}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5" />
-                        Arrive {formatTime(inspection.arrivalTime)}
+                        Arrive {formatTime(slot.arrivalTime)}
                       </span>
                       <span className="flex items-center gap-1">
                         <Home className="w-3.5 h-3.5" />
-                        Inspection {formatTime(inspection.inspectionTime)}
+                        Inspect {formatTime(slot.inspectionStartTime)} - {formatTime(slot.inspectionEndTime)}
                       </span>
                       <span className="flex items-center gap-1">
                         <ChevronRight className="w-3.5 h-3.5" />
-                        Depart {formatTime(inspection.departureTime)}
+                        Depart {formatTime(slot.departureTime)}
                       </span>
                     </div>
-                    {inspection.drivingTimeFromPrevious > 0 && (
+                    {slot.drivingTimeFromPrevious > 0 && (
                       <p className="mt-2 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded w-fit">
-                        {formatDuration(inspection.drivingTimeFromPrevious)} drive
+                        {formatDuration(slot.drivingTimeFromPrevious)} drive
                         from previous
                       </p>
                     )}
@@ -186,11 +190,17 @@ export default function PlannerPage() {
 
   const today = new Date().toISOString().split("T")[0];
   const [date, setDate] = useState(today);
-  const [bufferMinutes, setBufferMinutes] = useState(15);
+  const [preBufferMinutes, setPreBufferMinutes] = useState(5);
+  const [postBufferMinutes, setPostBufferMinutes] = useState(5);
+  const [inspectionDurationMinutes, setInspectionDurationMinutes] = useState(10);
 
   const planMutation = useMutation({
-    mutationFn: (input: { date: string; bufferMinutes: number }) =>
-      orpc.inspectionPlanner.planDay.call(input),
+    mutationFn: (input: {
+      date: string;
+      preBufferMinutes: number;
+      postBufferMinutes: number;
+      inspectionDurationMinutes: number;
+    }) => orpc.inspectionPlanner.planDay.call(input),
   });
 
   function handlePlanRoute(e: React.FormEvent) {
@@ -199,7 +209,9 @@ export default function PlannerPage() {
 
     planMutation.mutate({
       date,
-      bufferMinutes,
+      preBufferMinutes,
+      postBufferMinutes,
+      inspectionDurationMinutes,
     });
   }
 
@@ -250,7 +262,7 @@ export default function PlannerPage() {
         {/* Planning form */}
         <div className="bg-card border border-border rounded-xl p-6 mb-8">
           <form onSubmit={handlePlanRoute} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="date"
@@ -265,30 +277,67 @@ export default function PlannerPage() {
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
-                  className="h-12 text-base"
+                  className="h-12 text-base max-w-xs"
                 />
               </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="buffer"
-                  className="flex items-center gap-2 text-foreground"
-                >
+
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2 text-foreground">
                   <Clock className="w-4 h-4 text-muted-foreground" />
-                  Buffer Time
+                  Timing Settings
                 </Label>
-                <Input
-                  id="buffer"
-                  type="number"
-                  min={0}
-                  max={60}
-                  value={bufferMinutes}
-                  onChange={(e) => setBufferMinutes(Number(e.target.value))}
-                  placeholder="15"
-                  className="h-12 text-base"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Extra minutes between inspections for parking, walking, etc.
-                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* Pre-Buffer Time */}
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="preBuffer" className="text-sm font-medium whitespace-nowrap">
+                      Pre-buffer (parking + walk):
+                    </label>
+                    <input
+                      type="number"
+                      id="preBuffer"
+                      min={0}
+                      max={30}
+                      value={preBufferMinutes}
+                      onChange={(e) => setPreBufferMinutes(Number(e.target.value))}
+                      className="w-16 rounded border px-2 py-1 text-sm"
+                    />
+                    <span className="text-sm text-gray-500">min</span>
+                  </div>
+
+                  {/* Inspection Duration */}
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="inspectionDuration" className="text-sm font-medium whitespace-nowrap">
+                      Inspection time:
+                    </label>
+                    <input
+                      type="number"
+                      id="inspectionDuration"
+                      min={5}
+                      max={60}
+                      value={inspectionDurationMinutes}
+                      onChange={(e) => setInspectionDurationMinutes(Number(e.target.value))}
+                      className="w-16 rounded border px-2 py-1 text-sm"
+                    />
+                    <span className="text-sm text-gray-500">min</span>
+                  </div>
+
+                  {/* Post-Buffer Time */}
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="postBuffer" className="text-sm font-medium whitespace-nowrap">
+                      Post-buffer (walk back):
+                    </label>
+                    <input
+                      type="number"
+                      id="postBuffer"
+                      min={0}
+                      max={30}
+                      value={postBufferMinutes}
+                      onChange={(e) => setPostBufferMinutes(Number(e.target.value))}
+                      className="w-16 rounded border px-2 py-1 text-sm"
+                    />
+                    <span className="text-sm text-gray-500">min</span>
+                  </div>
+                </div>
               </div>
             </div>
             <Button
