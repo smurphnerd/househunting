@@ -7,6 +7,13 @@ import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import {
   Clock,
@@ -17,10 +24,19 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+type Duration = "15" | "30" | "45" | "60";
+
+const DURATION_OPTIONS: { value: Duration; label: string }[] = [
+  { value: "15", label: "15 minutes" },
+  { value: "30", label: "30 minutes" },
+  { value: "45", label: "45 minutes" },
+  { value: "60", label: "1 hour" },
+];
+
 export function InspectionTimes({ propertyId }: { propertyId: string }) {
   const orpc = useORPC();
   const [newDateTime, setNewDateTime] = useState("");
-  const [newEndDateTime, setNewEndDateTime] = useState("");
+  const [duration, setDuration] = useState<Duration>("30");
 
   const { data: inspectionTimes, isLoading, refetch } = useQuery(
     orpc.inspectionTime.listByProperty.queryOptions({ input: { propertyId } })
@@ -32,7 +48,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
     onSuccess: () => {
       refetch();
       setNewDateTime("");
-      setNewEndDateTime("");
+      setDuration("30");
       toast.success("Inspection time added");
     },
   });
@@ -57,9 +73,13 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
   function handleAddInspection(e: React.FormEvent) {
     e.preventDefault();
     if (!newDateTime) return;
+
+    const startDate = new Date(newDateTime);
+    const endDate = new Date(startDate.getTime() + parseInt(duration) * 60 * 1000);
+
     createMutation.mutate({
-      dateTime: new Date(newDateTime),
-      endDateTime: newEndDateTime ? new Date(newEndDateTime) : undefined,
+      dateTime: startDate,
+      endDateTime: endDate,
     });
   }
 
@@ -91,7 +111,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
         {/* Add new inspection form */}
         <form onSubmit={handleAddInspection} className="space-y-3">
           <div className="flex gap-3">
-            <div className="flex-1">
+            <div className="flex-[2]">
               <label className="text-xs text-muted-foreground mb-1 block">Start Time</label>
               <div className="relative">
                 <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
@@ -104,16 +124,19 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
               </div>
             </div>
             <div className="flex-1">
-              <label className="text-xs text-muted-foreground mb-1 block">End Time (optional)</label>
-              <div className="relative">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  type="datetime-local"
-                  value={newEndDateTime}
-                  onChange={(e) => setNewEndDateTime(e.target.value)}
-                  className="h-11 pl-10"
-                />
-              </div>
+              <label className="text-xs text-muted-foreground mb-1 block">Duration</label>
+              <Select value={duration} onValueChange={(v) => setDuration(v as Duration)}>
+                <SelectTrigger className="h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DURATION_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <Button

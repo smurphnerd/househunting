@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -41,7 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusSelector } from "@/components/StatusSelector";
+import type { PropertyStatus as PropertyStatusType } from "@/definitions/property";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterRulesManager } from "@/components/FilterRulesManager";
 import { evaluateFilter } from "@/lib/filterExpression";
@@ -146,9 +147,11 @@ function AddPropertyDialog() {
 function PropertyCard({
   property,
   onDelete,
+  onStatusChange,
 }: {
   property: Property;
   onDelete: () => void;
+  onStatusChange: (status: PropertyStatusType) => void;
 }) {
   const router = useRouter();
 
@@ -163,7 +166,10 @@ function PropertyCard({
       onClick={() => router.push(`/properties/${property.id}`)}
     >
       <div className="flex items-start justify-between mb-3">
-        <StatusBadge status={property.status} />
+        <StatusSelector
+          status={property.status}
+          onStatusChange={onStatusChange}
+        />
         <Button
           variant="ghost"
           size="icon"
@@ -227,9 +233,11 @@ function PropertyCard({
 function PropertyTable({
   properties,
   onDelete,
+  onStatusChange,
 }: {
   properties: Property[];
   onDelete: (id: string) => void;
+  onStatusChange: (id: string, status: PropertyStatusType) => void;
 }) {
   const router = useRouter();
 
@@ -296,7 +304,10 @@ function PropertyTable({
                 style={{ animationDelay: `${index * 30}ms` }}
               >
                 <td className="px-4 py-3">
-                  <StatusBadge status={property.status} />
+                  <StatusSelector
+                    status={property.status}
+                    onStatusChange={(status) => onStatusChange(property.id, status)}
+                  />
                 </td>
                 <td className="px-4 py-3">
                   <div className="max-w-[250px]">
@@ -374,6 +385,7 @@ function PropertiesView({
   viewMode: ViewMode;
 }) {
   const orpc = useORPC();
+  const queryClient = useQueryClient();
 
   const { data: properties, isLoading, refetch } = useQuery(
     orpc.property.list.queryOptions({ input: undefined })
@@ -382,6 +394,16 @@ function PropertiesView({
   const deleteMutation = useMutation({
     mutationFn: (id: string) => orpc.property.delete.call({ id }),
     onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: PropertyStatusType }) =>
+      orpc.property.update.call({ id, status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["property"] });
+      queryClient.invalidateQueries({ queryKey: ["properties"] });
       refetch();
     },
   });
@@ -422,6 +444,7 @@ function PropertiesView({
       <PropertyTable
         properties={filteredProperties as Property[]}
         onDelete={(id) => deleteMutation.mutate(id)}
+        onStatusChange={(id, status) => updateStatusMutation.mutate({ id, status })}
       />
     );
   }
@@ -437,6 +460,7 @@ function PropertiesView({
           <PropertyCard
             property={property as Property}
             onDelete={() => deleteMutation.mutate(property.id)}
+            onStatusChange={(status) => updateStatusMutation.mutate({ id: property.id, status })}
           />
         </div>
       ))}

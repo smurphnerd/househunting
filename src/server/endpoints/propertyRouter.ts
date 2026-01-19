@@ -28,7 +28,24 @@ export const propertyRouter = {
     .input(CreatePropertyInput)
     .output(PropertyDto)
     .handler(async ({ input, context }) => {
-      return context.cradle.propertyService.create(input);
+      const property = await context.cradle.propertyService.create(input);
+
+      // Auto-calculate distances in the background (don't await to keep response fast)
+      context.cradle.googleMapsService
+        .calculateDistances(property.address)
+        .then(async (distances) => {
+          const updateData = UpdatePropertyInput.parse({
+            id: property.id,
+            ...distances,
+          });
+          await context.cradle.propertyService.update(updateData);
+          context.cradle.logger.info({ propertyId: property.id }, "Auto-calculated distances for new property");
+        })
+        .catch((error) => {
+          context.cradle.logger.error({ error, propertyId: property.id }, "Failed to auto-calculate distances");
+        });
+
+      return property;
     }),
 
   update: commonProcedure

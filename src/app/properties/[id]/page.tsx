@@ -124,6 +124,22 @@ function PropertyForm({ id }: { id: string }) {
     },
   });
 
+  // Unsaved changes warning
+  const isDirty = form.formState.isDirty;
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
   // Reset form when property data loads
   useEffect(() => {
     if (property) {
@@ -170,7 +186,11 @@ function PropertyForm({ id }: { id: string }) {
     mutationFn: (input: UpdatePropertyInput) =>
       orpc.property.update.call(input),
     onSuccess: () => {
+      // Invalidate all property-related queries so changes reflect everywhere
       queryClient.invalidateQueries({ queryKey: ["property"] });
+      queryClient.invalidateQueries({ queryKey: ["properties"] });
+      // Reset form dirty state after successful save
+      form.reset(form.getValues());
       toast.success("Property updated");
     },
     onError: () => {
@@ -414,7 +434,13 @@ function PropertyForm({ id }: { id: string }) {
                           Address
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} value={field.value ?? ""} className="h-11" />
+                          <Input
+                            {...field}
+                            value={field.value ?? ""}
+                            className="h-11 bg-muted/50 cursor-not-allowed"
+                            readOnly
+                            title="Address cannot be changed after property creation"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

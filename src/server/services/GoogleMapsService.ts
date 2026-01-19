@@ -191,8 +191,19 @@ export class GoogleMapsService {
           resultCount: placesData.results?.length ?? 0
         }, "Places search response");
 
-        if (placesData.results?.[0]) {
-          allResults.push({ place: placesData.results[0], keyword });
+        // Filter results to only include places whose name contains the keyword
+        const matchingPlaces = (placesData.results || []).filter((place: PlaceResult) =>
+          place.name.toLowerCase().includes(keyword.toLowerCase())
+        );
+
+        this.deps.logger.debug({
+          keyword,
+          matchingCount: matchingPlaces.length,
+          matchingNames: matchingPlaces.slice(0, 3).map((p: PlaceResult) => p.name)
+        }, "Filtered places by name");
+
+        if (matchingPlaces[0]) {
+          allResults.push({ place: matchingPlaces[0], keyword });
         }
       }
 
