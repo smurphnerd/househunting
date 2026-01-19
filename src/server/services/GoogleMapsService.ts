@@ -15,6 +15,18 @@ export type DistanceCalculationResult = {
   nearestGym: NearbyPlace | null;
 };
 
+type PlaceResult = {
+  name: string;
+  vicinity?: string;
+  formatted_address?: string;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+};
+
 export class GoogleMapsService {
   constructor(private deps: Cradle) {}
 
@@ -160,7 +172,7 @@ export class GoogleMapsService {
       const { lat, lng } = geocodeData.results[0].geometry.location;
 
       // Search for each keyword and collect results
-      const allResults: Array<{ place: any; keyword: string }> = [];
+      const allResults: Array<{ place: PlaceResult; keyword: string }> = [];
 
       for (const keyword of keywords) {
         const placesUrl = new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json");
