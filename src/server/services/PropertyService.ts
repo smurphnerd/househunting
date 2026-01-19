@@ -34,9 +34,26 @@ export class PropertyService {
   }
 
   /**
+   * Check if a property with the given address already exists
+   */
+  async existsByAddress(address: string) {
+    const existing = await this.deps.database.query.properties.findFirst({
+      where: eq(properties.address, address),
+    });
+    return !!existing;
+  }
+
+  /**
    * Create a new property
+   * @throws Error if a property with the same address already exists
    */
   async create(input: CreatePropertyInput) {
+    // Check for duplicate address
+    const exists = await this.existsByAddress(input.address);
+    if (exists) {
+      throw new Error(`A property with address "${input.address}" already exists`);
+    }
+
     const [property] = await this.deps.database
       .insert(properties)
       .values({

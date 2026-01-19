@@ -47,6 +47,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterRulesManager } from "@/components/FilterRulesManager";
 import { evaluateFilter } from "@/lib/filterExpression";
 import { logout } from "@/lib/auth";
+import { toast } from "sonner";
 
 type ViewMode = "grid" | "table";
 
@@ -80,7 +81,11 @@ function AddPropertyDialog() {
       setOpen(false);
       setAddress("");
       setWebsiteUrl("");
+      toast.success("Property added");
       router.push(`/properties/${newProperty.id}`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to add property");
     },
   });
 

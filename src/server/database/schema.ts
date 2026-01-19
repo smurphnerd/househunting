@@ -65,7 +65,7 @@ export const properties = pgTable("properties", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   websiteUrl: text(),
-  address: text().notNull(),
+  address: text().notNull().unique(),
   status: text({ enum: propertyStatusEnum }).notNull().default("saved"),
   propertyType: text({ enum: propertyTypeEnum }),
   price: integer(),
