@@ -20,17 +20,19 @@ import {
 export function InspectionTimes({ propertyId }: { propertyId: string }) {
   const orpc = useORPC();
   const [newDateTime, setNewDateTime] = useState("");
+  const [newEndDateTime, setNewEndDateTime] = useState("");
 
   const { data: inspectionTimes, isLoading, refetch } = useQuery(
     orpc.inspectionTime.listByProperty.queryOptions({ input: { propertyId } })
   );
 
   const createMutation = useMutation({
-    mutationFn: (dateTime: Date) =>
-      orpc.inspectionTime.create.call({ propertyId, dateTime }),
+    mutationFn: ({ dateTime, endDateTime }: { dateTime: Date; endDateTime?: Date }) =>
+      orpc.inspectionTime.create.call({ propertyId, dateTime, endDateTime }),
     onSuccess: () => {
       refetch();
       setNewDateTime("");
+      setNewEndDateTime("");
       toast.success("Inspection time added");
     },
   });
@@ -55,7 +57,10 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
   function handleAddInspection(e: React.FormEvent) {
     e.preventDefault();
     if (!newDateTime) return;
-    createMutation.mutate(new Date(newDateTime));
+    createMutation.mutate({
+      dateTime: new Date(newDateTime),
+      endDateTime: newEndDateTime ? new Date(newEndDateTime) : undefined,
+    });
   }
 
   function formatDateTime(date: Date) {
@@ -84,23 +89,40 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
       </div>
       <div className="p-6 space-y-6">
         {/* Add new inspection form */}
-        <form onSubmit={handleAddInspection} className="flex gap-3">
-          <div className="flex-1 relative">
-            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-            <Input
-              type="datetime-local"
-              value={newDateTime}
-              onChange={(e) => setNewDateTime(e.target.value)}
-              className="h-11 pl-10"
-            />
+        <form onSubmit={handleAddInspection} className="space-y-3">
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-1 block">Start Time</label>
+              <div className="relative">
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  type="datetime-local"
+                  value={newDateTime}
+                  onChange={(e) => setNewDateTime(e.target.value)}
+                  className="h-11 pl-10"
+                />
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-1 block">End Time (optional)</label>
+              <div className="relative">
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  type="datetime-local"
+                  value={newEndDateTime}
+                  onChange={(e) => setNewEndDateTime(e.target.value)}
+                  className="h-11 pl-10"
+                />
+              </div>
+            </div>
           </div>
           <Button
             type="submit"
             disabled={createMutation.isPending || !newDateTime}
-            className="gap-2 h-11"
+            className="gap-2 h-11 w-full"
           >
             <Plus className="w-4 h-4" />
-            Add
+            Add Inspection Time
           </Button>
         </form>
 
@@ -122,6 +144,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
           <ul className="space-y-3">
             {inspectionTimes.map((time, index) => {
               const { date, time: timeStr } = formatDateTime(time.dateTime);
+              const endTimeStr = time.endDateTime ? formatDateTime(time.endDateTime).time : null;
               const isPast = new Date(time.dateTime) < new Date();
 
               return (
@@ -163,7 +186,7 @@ export function InspectionTimes({ propertyId }: { propertyId: string }) {
                         {date}
                       </p>
                       <p className={`text-sm ${time.attended ? "text-muted-foreground" : "text-muted-foreground"}`}>
-                        {timeStr}
+                        {timeStr}{endTimeStr ? ` - ${endTimeStr}` : ""}
                       </p>
                     </div>
 
