@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useORPC } from "@/lib/orpc.client";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { validateFilterExpression, getFilterableFields } from "@/lib/filterExpression";
+import { Hash, ToggleLeft, Type } from "lucide-react";
 
 export function FilterRulesManager() {
   const [open, setOpen] = useState(false);
@@ -102,12 +103,22 @@ export function FilterRulesManager() {
 
   const fields = getFilterableFields();
 
+  // Group and sort fields by type
+  const groupedFields = useMemo(() => {
+    const sorted = [...fields].sort((a, b) => a.name.localeCompare(b.name));
+    return {
+      number: sorted.filter((f) => f.type === "number"),
+      boolean: sorted.filter((f) => f.type === "boolean"),
+      string: sorted.filter((f) => f.type === "string"),
+    };
+  }, [fields]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">Manage Filters</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Filter Rules</DialogTitle>
         </DialogHeader>
@@ -134,20 +145,69 @@ export function FilterRulesManager() {
             )}
           </div>
 
-          {/* Field picker */}
-          <div className="flex flex-wrap gap-1">
-            <span className="text-sm text-muted-foreground mr-2">Fields:</span>
-            {fields.slice(0, 10).map((field) => (
-              <button
-                key={field.name}
-                type="button"
-                className="text-xs bg-secondary px-2 py-0.5 rounded hover:bg-secondary/80"
-                onClick={() => setExpression((prev) => prev + field.name)}
-              >
-                {field.name}
-              </button>
-            ))}
-            <span className="text-xs text-muted-foreground">...</span>
+          {/* Field picker - grouped by type */}
+          <div className="border border-border rounded-lg p-4 space-y-4 bg-muted/30">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Available Fields</p>
+
+            {/* Number fields */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Hash className="w-3 h-3" />
+                <span>Numbers</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {groupedFields.number.map((field) => (
+                  <button
+                    key={field.name}
+                    type="button"
+                    className="text-xs bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 px-2 py-1 rounded-md hover:bg-blue-500/20 transition-colors"
+                    onClick={() => setExpression((prev) => prev + field.name)}
+                  >
+                    {field.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Boolean fields */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <ToggleLeft className="w-3 h-3" />
+                <span>Yes/No</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {groupedFields.boolean.map((field) => (
+                  <button
+                    key={field.name}
+                    type="button"
+                    className="text-xs bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 px-2 py-1 rounded-md hover:bg-emerald-500/20 transition-colors"
+                    onClick={() => setExpression((prev) => prev + field.name)}
+                  >
+                    {field.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* String fields */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Type className="w-3 h-3" />
+                <span>Text</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {groupedFields.string.map((field) => (
+                  <button
+                    key={field.name}
+                    type="button"
+                    className="text-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 px-2 py-1 rounded-md hover:bg-amber-500/20 transition-colors"
+                    onClick={() => setExpression((prev) => prev + field.name)}
+                  >
+                    {field.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-2">

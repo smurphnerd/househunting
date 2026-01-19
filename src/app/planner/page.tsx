@@ -281,61 +281,73 @@ export default function PlannerPage() {
                 />
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Label className="flex items-center gap-2 text-foreground">
                   <Clock className="w-4 h-4 text-muted-foreground" />
                   Timing Settings
                 </Label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {/* Pre-Buffer Time */}
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="preBuffer" className="text-sm font-medium whitespace-nowrap">
-                      Pre-buffer (parking + walk):
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="preBuffer" className="block text-sm text-muted-foreground">
+                      Pre-buffer
                     </label>
-                    <input
-                      type="number"
-                      id="preBuffer"
-                      min={0}
-                      max={30}
-                      value={preBufferMinutes}
-                      onChange={(e) => setPreBufferMinutes(Number(e.target.value))}
-                      className="w-16 rounded border px-2 py-1 text-sm"
-                    />
-                    <span className="text-sm text-gray-500">min</span>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        id="preBuffer"
+                        min={0}
+                        max={30}
+                        value={preBufferMinutes}
+                        onChange={(e) => setPreBufferMinutes(Number(e.target.value))}
+                        className="h-12 text-base pr-12"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+                        min
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Parking + walk</p>
                   </div>
 
-                  {/* Inspection Duration */}
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="inspectionDuration" className="text-sm font-medium whitespace-nowrap">
-                      Inspection time:
+                  <div className="space-y-2">
+                    <label htmlFor="inspectionDuration" className="block text-sm text-muted-foreground">
+                      Inspection
                     </label>
-                    <input
-                      type="number"
-                      id="inspectionDuration"
-                      min={5}
-                      max={60}
-                      value={inspectionDurationMinutes}
-                      onChange={(e) => setInspectionDurationMinutes(Number(e.target.value))}
-                      className="w-16 rounded border px-2 py-1 text-sm"
-                    />
-                    <span className="text-sm text-gray-500">min</span>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        id="inspectionDuration"
+                        min={5}
+                        max={60}
+                        value={inspectionDurationMinutes}
+                        onChange={(e) => setInspectionDurationMinutes(Number(e.target.value))}
+                        className="h-12 text-base pr-12"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+                        min
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Time at property</p>
                   </div>
 
-                  {/* Post-Buffer Time */}
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="postBuffer" className="text-sm font-medium whitespace-nowrap">
-                      Post-buffer (walk back):
+                  <div className="space-y-2">
+                    <label htmlFor="postBuffer" className="block text-sm text-muted-foreground">
+                      Post-buffer
                     </label>
-                    <input
-                      type="number"
-                      id="postBuffer"
-                      min={0}
-                      max={30}
-                      value={postBufferMinutes}
-                      onChange={(e) => setPostBufferMinutes(Number(e.target.value))}
-                      className="w-16 rounded border px-2 py-1 text-sm"
-                    />
-                    <span className="text-sm text-gray-500">min</span>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        id="postBuffer"
+                        min={0}
+                        max={30}
+                        value={postBufferMinutes}
+                        onChange={(e) => setPostBufferMinutes(Number(e.target.value))}
+                        className="h-12 text-base pr-12"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+                        min
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Walk back to car</p>
                   </div>
                 </div>
               </div>
