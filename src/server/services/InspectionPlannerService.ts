@@ -26,12 +26,18 @@ export type RouteOption = {
   totalInspections: number;
 };
 
+export interface PlannerConfig {
+  preBufferMinutes: number;
+  postBufferMinutes: number;
+  inspectionDurationMinutes: number;
+}
+
 export class InspectionPlannerService {
   constructor(private deps: Cradle) {}
 
   async planInspections(
     dateString: string,
-    bufferMinutes: number = 15
+    config: PlannerConfig
   ): Promise<RouteOption[]> {
     // Parse date string "YYYY-MM-DD" as local midnight
     // This ensures we search for the correct local day regardless of timezone
@@ -46,6 +52,7 @@ export class InspectionPlannerService {
         propertyId: properties.id,
         address: properties.address,
         dateTime: inspectionTimes.dateTime,
+        endDateTime: inspectionTimes.endDateTime,
       })
       .from(inspectionTimes)
       .innerJoin(properties, eq(inspectionTimes.propertyId, properties.id))
@@ -63,18 +70,32 @@ export class InspectionPlannerService {
     }
 
     if (inspections.length === 1) {
+      const inspection = inspections[0];
+      const inspectionWindowStart = inspection.dateTime;
+      const inspectionWindowEnd = inspection.endDateTime;
+
+      // Calculate arrival time: window start minus pre-buffer
+      const arrivalTime = new Date(inspectionWindowStart.getTime() - config.preBufferMinutes * 60000);
+      const inspectionStartTime = new Date(arrivalTime.getTime() + config.preBufferMinutes * 60000);
+      const inspectionEndTime = new Date(inspectionStartTime.getTime() + config.inspectionDurationMinutes * 60000);
+      const departureTime = new Date(inspectionEndTime.getTime() + config.postBufferMinutes * 60000);
+
       return [{
-        inspections: [{
-          propertyId: inspections[0].propertyId,
-          address: inspections[0].address,
-          inspectionTime: inspections[0].dateTime,
-          arrivalTime: new Date(inspections[0].dateTime.getTime() - 5 * 60000),
-          departureTime: new Date(inspections[0].dateTime.getTime() + 30 * 60000),
+        name: "Single Inspection",
+        description: "Single inspection",
+        slots: [{
+          propertyId: inspection.propertyId,
+          address: inspection.address,
+          inspectionWindowStart,
+          inspectionWindowEnd,
+          arrivalTime,
+          inspectionStartTime,
+          inspectionEndTime,
+          departureTime,
           drivingTimeFromPrevious: 0,
         }],
         totalDrivingTime: 0,
         totalInspections: 1,
-        description: "Single inspection",
       }];
     }
 
@@ -87,7 +108,7 @@ export class InspectionPlannerService {
     const routes = this.generateRouteOptions(
       inspections,
       drivingTimes,
-      bufferMinutes
+      config
     );
 
     return routes;
@@ -138,36 +159,40 @@ export class InspectionPlannerService {
   }
 
   private generateRouteOptions(
-    inspections: { propertyId: string; address: string; dateTime: Date }[],
+    inspections: { propertyId: string; address: string; dateTime: Date; endDateTime: Date | null }[],
     drivingTimes: number[][],
-    bufferMinutes: number
+    config: PlannerConfig
   ): RouteOption[] {
     const options: RouteOption[] = [];
-    const inspectionDuration = 20;
 
     // Option 1: Try to fit all inspections
     const allOption = this.buildRoute(
       inspections,
       drivingTimes,
-      bufferMinutes,
-      inspectionDuration,
+      config,
       inspections.length
     );
     if (allOption) {
+      allOption.name = "Full Route";
       allOption.description = `All ${allOption.totalInspections} inspections`;
       options.push(allOption);
     }
 
     // Option 2: Relaxed pace (more buffer)
     if (inspections.length > 2) {
+      const relaxedConfig: PlannerConfig = {
+        ...config,
+        preBufferMinutes: config.preBufferMinutes + 5,
+        postBufferMinutes: config.postBufferMinutes + 5,
+      };
       const relaxedOption = this.buildRoute(
         inspections,
         drivingTimes,
-        bufferMinutes + 10,
-        inspectionDuration,
+        relaxedConfig,
         Math.ceil(inspections.length * 0.75)
       );
       if (relaxedOption && relaxedOption.totalInspections < (allOption?.totalInspections || Infinity)) {
+        relaxedOption.name = "Relaxed Pace";
         relaxedOption.description = `${relaxedOption.totalInspections} inspections, relaxed pace`;
         options.push(relaxedOption);
       }
@@ -178,11 +203,11 @@ export class InspectionPlannerService {
       const minimalOption = this.buildRoute(
         inspections.slice(0, Math.ceil(inspections.length / 2)),
         drivingTimes,
-        bufferMinutes,
-        inspectionDuration,
+        config,
         Math.ceil(inspections.length / 2)
       );
       if (minimalOption) {
+        minimalOption.name = "Morning Only";
         minimalOption.description = `${minimalOption.totalInspections} inspections, morning only`;
         options.push(minimalOption);
       }
@@ -192,60 +217,93 @@ export class InspectionPlannerService {
   }
 
   private buildRoute(
-    inspections: { propertyId: string; address: string; dateTime: Date }[],
+    inspections: { propertyId: string; address: string; dateTime: Date; endDateTime: Date | null }[],
     drivingTimes: number[][],
-    bufferMinutes: number,
-    inspectionDuration: number,
+    config: PlannerConfig,
     maxInspections: number
   ): RouteOption | null {
     const slots: InspectionSlot[] = [];
     let totalDrivingTime = 0;
-    let currentEndTime: Date | null = null;
+    // currentDepartureTime tracks when we're back at the car (after post-buffer)
+    let currentDepartureTime: Date | null = null;
 
     for (let i = 0; i < inspections.length && slots.length < maxInspections; i++) {
       const inspection = inspections[i];
-      const inspectionTime = inspection.dateTime;
-      const arrivalTime = new Date(inspectionTime.getTime() - 5 * 60000);
+      const inspectionWindowStart = inspection.dateTime;
+      const inspectionWindowEnd = inspection.endDateTime;
 
-      if (currentEndTime) {
-        const drivingTime = drivingTimes[slots.length - 1]?.[i] || 15;
-        const requiredDepartureTime = new Date(arrivalTime.getTime() - (drivingTime + bufferMinutes) * 60000);
-
-        if (requiredDepartureTime < currentEndTime) {
-          continue; // Skip this inspection
-        }
-
-        totalDrivingTime += drivingTime;
-
-        slots.push({
-          propertyId: inspection.propertyId,
-          address: inspection.address,
-          inspectionTime,
-          arrivalTime,
-          departureTime: new Date(inspectionTime.getTime() + inspectionDuration * 60000),
-          drivingTimeFromPrevious: drivingTime,
-        });
+      // Calculate the latest arrival time at the property
+      // Latest arrival = windowEnd - preBuffer - inspectionDuration (if windowEnd exists)
+      // Otherwise = windowStart - preBuffer (arrive just before window opens)
+      let latestArrival: Date;
+      if (inspectionWindowEnd) {
+        latestArrival = new Date(
+          inspectionWindowEnd.getTime() -
+            config.preBufferMinutes * 60000 -
+            config.inspectionDurationMinutes * 60000
+        );
       } else {
-        slots.push({
-          propertyId: inspection.propertyId,
-          address: inspection.address,
-          inspectionTime,
-          arrivalTime,
-          departureTime: new Date(inspectionTime.getTime() + inspectionDuration * 60000),
-          drivingTimeFromPrevious: 0,
-        });
+        // No end time, so arrive before the window starts
+        latestArrival = new Date(inspectionWindowStart.getTime() - config.preBufferMinutes * 60000);
       }
 
-      currentEndTime = new Date(inspectionTime.getTime() + inspectionDuration * 60000);
+      let arrivalTime: Date;
+      let drivingTime = 0;
+
+      if (currentDepartureTime) {
+        // Calculate driving time from previous property
+        drivingTime = drivingTimes[slots.length - 1]?.[i] || 15;
+
+        // Earliest possible arrival = currentDepartureTime + drivingTime
+        const earliestArrival = new Date(currentDepartureTime.getTime() + drivingTime * 60000);
+
+        // Check feasibility: can we arrive before the latest allowed arrival time?
+        if (earliestArrival > latestArrival) {
+          continue; // Skip this inspection - we can't make it in time
+        }
+
+        // We arrive as early as possible (or at the latest allowed time if we arrive too early)
+        // Actually, we want to arrive as early as we can, not later
+        arrivalTime = earliestArrival;
+        totalDrivingTime += drivingTime;
+      } else {
+        // First inspection - arrive before the window starts
+        arrivalTime = new Date(inspectionWindowStart.getTime() - config.preBufferMinutes * 60000);
+        drivingTime = 0;
+      }
+
+      // Calculate all the timing for this inspection
+      // inspectionStartTime = arrivalTime + preBuffer
+      const inspectionStartTime = new Date(arrivalTime.getTime() + config.preBufferMinutes * 60000);
+      // inspectionEndTime = inspectionStartTime + inspectionDuration
+      const inspectionEndTime = new Date(inspectionStartTime.getTime() + config.inspectionDurationMinutes * 60000);
+      // departureTime = inspectionEndTime + postBuffer (when we're back at the car)
+      const departureTime = new Date(inspectionEndTime.getTime() + config.postBufferMinutes * 60000);
+
+      slots.push({
+        propertyId: inspection.propertyId,
+        address: inspection.address,
+        inspectionWindowStart,
+        inspectionWindowEnd,
+        arrivalTime,
+        inspectionStartTime,
+        inspectionEndTime,
+        departureTime,
+        drivingTimeFromPrevious: drivingTime,
+      });
+
+      // Update current departure time for next iteration
+      currentDepartureTime = departureTime;
     }
 
     if (slots.length === 0) return null;
 
     return {
-      inspections: slots,
+      name: "",
+      description: "",
+      slots,
       totalDrivingTime,
       totalInspections: slots.length,
-      description: "",
     };
   }
 }
