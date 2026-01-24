@@ -1,7 +1,7 @@
 // src/app/properties/[id]/page.tsx
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -79,6 +79,7 @@ function PropertyForm({ id }: { id: string }) {
   const orpc = useORPC();
   const queryClient = useQueryClient();
   const [postInspectionOpen, setPostInspectionOpen] = useState(false);
+  const formInitializedRef = useRef(false);
 
   const { data: property, isLoading, refetch } = useQuery(
     orpc.property.getById.queryOptions({ input: { id } })
@@ -140,9 +141,10 @@ function PropertyForm({ id }: { id: string }) {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
 
-  // Reset form when property data loads
+  // Reset form when property data loads initially (not on refetch)
   useEffect(() => {
-    if (property) {
+    if (property && !formInitializedRef.current) {
+      formInitializedRef.current = true;
       form.reset({
         id,
         websiteUrl: property.websiteUrl ?? "",
@@ -215,6 +217,23 @@ function PropertyForm({ id }: { id: string }) {
       toast.error(error.message);
     },
   });
+
+  // Auto-calculate distances for new properties or properties without distances
+  const distancesCalculatedRef = useRef(false);
+  useEffect(() => {
+    if (
+      property &&
+      !distancesCalculatedRef.current &&
+      !calculateDistancesMutation.isPending &&
+      property.distanceToWork === null &&
+      property.nearestStation === null &&
+      property.nearestSupermarket === null &&
+      property.nearestGym === null
+    ) {
+      distancesCalculatedRef.current = true;
+      calculateDistancesMutation.mutate();
+    }
+  }, [property, calculateDistancesMutation]);
 
   // Loading and not found checks must come after all hooks
   if (isLoading) {
