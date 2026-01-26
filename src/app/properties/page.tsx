@@ -175,19 +175,35 @@ function PropertyCard({
           status={property.status}
           onStatusChange={onStatusChange}
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (confirm("Delete this property?")) {
-              onDelete();
-            }
-          }}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {property.websiteUrl && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(property.websiteUrl!, "_blank", "noopener,noreferrer");
+              }}
+              title="Open listing"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (confirm("Delete this property?")) {
+                onDelete();
+              }
+            }}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       <h3 className="font-medium text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors">
@@ -355,6 +371,20 @@ function PropertyTable({
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
+                    {property.websiteUrl && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(property.websiteUrl!, "_blank", "noopener,noreferrer");
+                        }}
+                        title="Open listing"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
