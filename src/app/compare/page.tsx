@@ -29,6 +29,10 @@ import {
   Thermometer,
   Volume2,
   Sun,
+  MapPin,
+  Train,
+  ShoppingCart,
+  Dumbbell,
 } from "lucide-react";
 
 type ComparisonField = {
@@ -36,7 +40,7 @@ type ComparisonField = {
   label: string;
   icon?: React.ReactNode;
   format?: (value: unknown) => string;
-  category: "basic" | "costs" | "features" | "inspection";
+  category: "basic" | "costs" | "features" | "distances" | "inspection";
 };
 
 const COMPARISON_FIELDS: ComparisonField[] = [
@@ -63,6 +67,20 @@ const COMPARISON_FIELDS: ComparisonField[] = [
   { key: "overallImpression", label: "Overall Rating", icon: <Star className="w-4 h-4" />, format: (v) => v ? `${v}/5` : "-", category: "inspection" },
   { key: "isQuiet", label: "Quiet", icon: <Volume2 className="w-4 h-4" />, format: (v) => v === true ? "Yes" : v === false ? "No" : "-", category: "inspection" },
   { key: "goodLighting", label: "Natural Light", icon: <Sun className="w-4 h-4" />, format: (v) => v === true ? "Yes" : v === false ? "No" : "-", category: "inspection" },
+
+  { key: "distanceToWork", label: "To Monash", icon: <MapPin className="w-4 h-4" />, format: (v) => v ? `${v} km` : "-", category: "distances" },
+  { key: "nearestStation", label: "Nearest Station", icon: <Train className="w-4 h-4" />, format: (v) => {
+    const p = v as { distance: number; name: string } | null;
+    return p ? `${p.name} (${p.distance} km)` : "-";
+  }, category: "distances" },
+  { key: "nearestSupermarket", label: "Nearest Supermarket", icon: <ShoppingCart className="w-4 h-4" />, format: (v) => {
+    const p = v as { distance: number; name: string } | null;
+    return p ? `${p.name} (${p.distance} km)` : "-";
+  }, category: "distances" },
+  { key: "nearestGym", label: "Nearest Gym", icon: <Dumbbell className="w-4 h-4" />, format: (v) => {
+    const p = v as { distance: number; name: string } | null;
+    return p ? `${p.name} (${p.distance} km)` : "-";
+  }, category: "distances" },
 ];
 
 function formatValue(field: ComparisonField, value: unknown): string {
@@ -132,6 +150,7 @@ function ComparisonContent() {
     { id: "basic", label: "Property Details" },
     { id: "costs", label: "Costs & Parking" },
     { id: "features", label: "Features" },
+    { id: "distances", label: "Distances" },
     { id: "inspection", label: "Post-Inspection" },
   ];
 
